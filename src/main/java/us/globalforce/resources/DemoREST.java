@@ -50,7 +50,7 @@ public class DemoREST extends HttpServlet {
 		NameValuePair[] params = new NameValuePair[1];
 
 		params[0] = new NameValuePair("q",
-				"SELECT * from Case WHERE Sentiment != null LIMIT 100");
+				"SELECT * from Case WHERE Sentiment == null LIMIT 100");
 		get.setQueryString(params);
 
 		SentimentAnalyzer analyzer = new SentimentAnalyzer();
