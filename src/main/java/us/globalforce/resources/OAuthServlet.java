@@ -21,14 +21,15 @@ import com.google.gson.JsonParser;
 /**
  * Servlet parameters
  */
-//@WebServlet(name = "oauth", urlPatterns = { "/oauth/*", "/oauth" }, initParams = {
+@WebServlet(name = "oauth", urlPatterns = { "/oauth/*", "/oauth" }, initParams = {
 //		// clientId is 'Consumer Key' in the Remote Access UI
 //		@WebInitParam(name = "clientId", value = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d"),
 //		// clientSecret is 'Consumer Secret' in the Remote Access UI
 //		@WebInitParam(name = "clientSecret", value = "295020390184049994"),
 //		// This must be identical to 'Callback URL' in the Remote Access UI
 //		@WebInitParam(name = "redirectUri", value = "https://http://pacific-gorge-1278.herokuapp.com/RestTest/oauth/_callback"),
-//		@WebInitParam(name = "environment", value = "https://login.salesforce.com"), })
+//		@WebInitParam(name = "environment", value = "https://login.salesforce.com"),
+		})
 public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
