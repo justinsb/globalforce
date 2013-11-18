@@ -27,6 +27,7 @@ import us.globalforce.services.SObjectList;
 import us.globalforce.services.Sentiment;
 import us.globalforce.services.SentimentAnalyzer;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -58,7 +59,8 @@ public class DemoREST extends HttpServlet {
 		params[0] = new NameValuePair(
 				"q",
 				"SELECT Id, Name, Sentiment__c, Subject, Description from Case WHERE Sentiment__c == null LIMIT 100");
-		params[0] = new NameValuePair("q", "SELECT Id,Name from Case LIMIT 100");
+		params[0] = new NameValuePair("q",
+				"SELECT Id,Subject,Description from Case LIMIT 100");
 		get.setQueryString(params);
 
 		log.info("Running API query: {}", params[0]);
@@ -114,7 +116,7 @@ public class DemoREST extends HttpServlet {
 
 					writer.write("<table>");
 					for (String key : o.keys()) {
-						String value = o.get(key);
+						String value = o.find(key);
 
 						writer.write("<tr><td>");
 						writer.write(key);
@@ -128,11 +130,21 @@ public class DemoREST extends HttpServlet {
 
 					// Sentiment__c
 
-					String text = o.get("Subject");
-					text += "\n";
-					text += o.get("Description");
+					StringBuilder text = new StringBuilder();
+					String subject = o.find("Subject");
+					if (!Strings.isNullOrEmpty(subject)) {
+						text.append(subject);
+					}
+					String description = o.find("Description");
+					if (!Strings.isNullOrEmpty(description)) {
+						if (text.length() != 0) {
+							text.append("\n");
+						}
+						text.append(description);
+					}
 
-					Sentiment sentiment = analyzer.scoreSentiment(text);
+					Sentiment sentiment = analyzer.scoreSentiment(text
+							.toString());
 					if (sentiment == null) {
 						writer.write("No sentiment");
 					} else {

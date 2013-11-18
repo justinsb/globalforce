@@ -16,11 +16,11 @@ public class SObject {
 	}
 
 	public String getId() {
-		return json.get("Id").getAsString();
+		return find("Id");
 	}
 
 	public String getName() {
-		return json.get("Name").getAsString();
+		return find("Name");
 	}
 
 	public Set<String> keys() {
@@ -33,8 +33,12 @@ public class SObject {
 		return keys;
 	}
 
-	public String get(String key) {
-		return json.get(key).getAsString();
+	public String find(String key) {
+		JsonElement jsonElement = json.get(key);
+		if (jsonElement == null) {
+			return null;
+		}
+		return jsonElement.toString();
 	}
 
 }
