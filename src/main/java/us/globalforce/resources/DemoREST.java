@@ -139,7 +139,7 @@ public class DemoREST extends HttpServlet {
 
 				writer.write("\n");
 			} else {
-				log.info("Unexpected API response: {}", get);
+				log.info("Unexpected API response: {}", get.getStatusLine());
 			}
 		} finally {
 			get.releaseConnection();
