@@ -53,9 +53,11 @@ public class DemoREST extends HttpServlet {
 		// set the SOQL as a query param
 		NameValuePair[] params = new NameValuePair[1];
 
+		params[0] = new NameValuePair(
+				"q",
+				"SELECT Id, Name, Sentiment__c, Subject, Description from Case WHERE Sentiment__c == null LIMIT 100");
 		params[0] = new NameValuePair("q",
-				"SELECT * from Case WHERE Sentiment__c == null LIMIT 100");
-		params[0] = new NameValuePair("q", "SELECT * from Case LIMIT 100");
+				"SELECT Id, Name, Sentiment__c, Subject, Description from Case LIMIT 100");
 		get.setQueryString(params);
 
 		log.info("Running API query: {}", params[0]);
