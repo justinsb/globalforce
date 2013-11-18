@@ -1,7 +1,7 @@
 package com.salesforce.client;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -14,11 +14,11 @@ public class SalesforceClient {
     private static final Logger log = LoggerFactory.getLogger(SalesforceClient.class);
 
     final HttpClient httpclient;
-    final URI baseUrl;
+    final URL baseUrl;
 
     final AuthToken token;
 
-    public SalesforceClient(HttpClient httpclient, URI baseUrl, AuthToken token) {
+    public SalesforceClient(HttpClient httpclient, URL baseUrl, AuthToken token) {
         super();
         this.httpclient = httpclient;
         this.baseUrl = baseUrl;
@@ -26,7 +26,7 @@ public class SalesforceClient {
     }
 
     public SObjectSchema getSchema(String entity) throws IOException {
-        URI url = baseUrl.resolve("services/data/v20.0/" + entity + "/describe");
+        URL url = new URL(baseUrl, "services/data/v20.0/" + entity + "/describe");
 
         GetMethod get = new GetMethod(url.toString());
 
@@ -43,7 +43,7 @@ public class SalesforceClient {
     }
 
     public SObjectList runQuery(String soql) throws IOException {
-        URI url = baseUrl.resolve("services/data/v20.0/query");
+        URL url = new URL(baseUrl, "services/data/v20.0/query");
 
         GetMethod get = new GetMethod(url.toString());
 

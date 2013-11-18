@@ -3,7 +3,7 @@ package us.globalforce.resources;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URI;
+import java.net.URL;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
@@ -233,7 +233,8 @@ public class DemoREST extends HttpServlet {
 
         log.info("We have an access token: " + accessToken + "\n" + "Using instance " + instanceUrl + "\n\n");
 
-        SalesforceClient client = new SalesforceClient(httpClient, URI.create(instanceUrl), new AuthToken(accessToken));
+        URL url = new URL(instanceUrl);
+        SalesforceClient client = new SalesforceClient(httpClient, url, new AuthToken(accessToken));
 
         showAccounts(client, writer);
 
