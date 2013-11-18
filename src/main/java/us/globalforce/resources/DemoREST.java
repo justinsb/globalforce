@@ -70,7 +70,7 @@ public class DemoREST extends HttpServlet {
                 writer.write("</td>");
 
                 writer.write("<td>");
-                writer.write(value.toString());
+                writer.write(value != null ? value.toString() : "");
                 writer.write("</td></tr>");
             }
             writer.write("</table>");
