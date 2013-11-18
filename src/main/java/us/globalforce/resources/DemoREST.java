@@ -22,8 +22,6 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.globalforce.services.SObject;
-import us.globalforce.services.SObjectList;
 import us.globalforce.services.Sentiment;
 import us.globalforce.services.SentimentAnalyzer;
 
@@ -32,6 +30,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.salesforce.client.SObject;
+import com.salesforce.client.SObjectList;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
 @Singleton

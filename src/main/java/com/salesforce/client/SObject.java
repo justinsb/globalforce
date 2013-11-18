@@ -1,4 +1,4 @@
-package us.globalforce.services;
+package com.salesforce.client;
 
 import java.util.Map;
 import java.util.Set;

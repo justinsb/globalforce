@@ -1,4 +1,4 @@
-package us.globalforce.services;
+package com.salesforce.client;
 
 public class AuthToken {
 	final String accessToken;
