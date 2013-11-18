@@ -52,6 +52,8 @@ public class SObject {
             JsonPrimitive primitive = (JsonPrimitive) jsonElement;
             if (primitive.isString()) {
                 return primitive.getAsString();
+            } else if (primitive.isJsonNull()) {
+                return null;
             } else {
                 log.warn("Key was found, but was not known-type: {}={}", key, jsonElement);
             }
