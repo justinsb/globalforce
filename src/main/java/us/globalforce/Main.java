@@ -57,6 +57,10 @@ public class Main {
 
 		server.start();
 
+		while (true) {
+			Thread.sleep(5000);
+		}
+
 		// String webappDirLocation = "src/main/webapp/";
 		// Tomcat tomcat = new Tomcat();
 		//
