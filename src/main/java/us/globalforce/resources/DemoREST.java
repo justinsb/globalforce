@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.List;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import us.globalforce.services.Sentiment;
 import us.globalforce.services.SentimentAnalyzer;
 
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -76,20 +77,12 @@ public class DemoREST extends HttpServlet {
 
             // Sentiment__c
 
-            StringBuilder text = new StringBuilder();
-            String subject = o.findString("Subject", "");
-            if (!Strings.isNullOrEmpty(subject)) {
-                text.append(subject);
-            }
-            String description = o.findString("Description", "");
-            if (!Strings.isNullOrEmpty(description)) {
-                if (text.length() != 0) {
-                    text.append("\n\n\n");
-                }
-                text.append(description);
-            }
+            List<String> sections = Lists.newArrayList();
 
-            Sentiment sentiment = sentimentAnalyzer.scoreSentiment(text.toString());
+            sections.add(o.findString("Subject", ""));
+            sections.add(o.findString("Description", ""));
+
+            Sentiment sentiment = sentimentAnalyzer.scoreSentiment(sections);
             if (sentiment == null) {
                 writer.write("No sentiment");
             } else {
