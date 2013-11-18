@@ -15,33 +15,29 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 public class SObjectList implements Iterable<SObject> {
-	final List<SObject> results;
+    final List<SObject> results;
 
-	public SObjectList(GetMethod get) throws JsonIOException,
-			JsonSyntaxException, IOException {
-		JsonParser parser = new JsonParser();
-		JsonObject response = parser.parse(
-				new InputStreamReader(get.getResponseBodyAsStream()))
-				.getAsJsonObject();
+    public SObjectList(GetMethod get) throws JsonIOException, JsonSyntaxException, IOException {
+        JsonParser parser = new JsonParser();
+        JsonObject response = parser.parse(new InputStreamReader(get.getResponseBodyAsStream())).getAsJsonObject();
 
-		this.results = parse(response);
-	}
+        this.results = parse(response);
+    }
 
-	private List<SObject> parse(JsonObject response) {
-		List<SObject> objects = Lists.newArrayList();
+    private static List<SObject> parse(JsonObject response) {
+        List<SObject> objects = Lists.newArrayList();
 
-		JsonArray records = response.get("records").getAsJsonArray();
+        JsonArray records = response.get("records").getAsJsonArray();
+        for (int i = 0; i < records.size(); i++) {
+            objects.add(new SObject(records.get(i).getAsJsonObject()));
+        }
 
-		for (int i = 0; i < results.size(); i++) {
-			objects.add(new SObject(records.get(i).getAsJsonObject()));
-		}
+        return objects;
+    }
 
-		return objects;
-	}
-
-	@Override
-	public Iterator<SObject> iterator() {
-		return results.iterator();
-	}
+    @Override
+    public Iterator<SObject> iterator() {
+        return results.iterator();
+    }
 
 }
