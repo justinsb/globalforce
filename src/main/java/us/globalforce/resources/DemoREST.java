@@ -18,6 +18,8 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import us.globalforce.services.SObject;
 import us.globalforce.services.SObjectList;
@@ -31,6 +33,8 @@ import com.google.gson.JsonParser;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
 public class DemoREST extends HttpServlet {
+	private static final Logger log = LoggerFactory.getLogger(DemoREST.class);
+
 	private static final long serialVersionUID = 1L;
 	private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 	private static final String INSTANCE_URL = "INSTANCE_URL";
@@ -50,9 +54,11 @@ public class DemoREST extends HttpServlet {
 		NameValuePair[] params = new NameValuePair[1];
 
 		params[0] = new NameValuePair("q",
-				"SELECT * from Case WHERE Sentiment == null LIMIT 100");
+				"SELECT * from Case WHERE Sentiment__c == null LIMIT 100");
 		params[0] = new NameValuePair("q", "SELECT * from Case LIMIT 100");
 		get.setQueryString(params);
+
+		log.info("Running API query: {}", params[0]);
 
 		SentimentAnalyzer analyzer = new SentimentAnalyzer();
 
@@ -132,6 +138,8 @@ public class DemoREST extends HttpServlet {
 				}
 
 				writer.write("\n");
+			} else {
+				log.info("Unexpected API response: {}", get);
 			}
 		} finally {
 			get.releaseConnection();
