@@ -3,11 +3,9 @@ package us.globalforce.resources;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +19,12 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import us.globalforce.services.SObject;
+import us.globalforce.services.SObjectList;
+import us.globalforce.services.Sentiment;
+import us.globalforce.services.SentimentAnalyzer;
+
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -48,49 +50,86 @@ public class DemoREST extends HttpServlet {
 		NameValuePair[] params = new NameValuePair[1];
 
 		params[0] = new NameValuePair("q",
-				"SELECT Name, Id from Case LIMIT 100");
+				"SELECT * from Case WHERE Sentiment != null LIMIT 100");
 		get.setQueryString(params);
+
+		SentimentAnalyzer analyzer = new SentimentAnalyzer();
 
 		try {
 			httpclient.executeMethod(get);
 			if (get.getStatusCode() == HttpStatus.SC_OK) {
-				// Now lets use the standard java json classes to work with the
-				// results
-				JsonParser parser = new JsonParser();
+				SObjectList results = new SObjectList(get);
+				//
+				// // Now lets use the standard java json classes to work with
+				// the
+				// // results
+				// JsonParser parser = new JsonParser();
+				//
+				// JsonObject response = parser.parse(
+				// new InputStreamReader(get.getResponseBodyAsStream()))
+				// .getAsJsonObject();
+				// System.out.println("Query response: " + response.toString());
+				//
+				// writer.write(response.get("totalSize").getAsString()
+				// + " record(s) returned\n\n");
 
-				JsonObject response = parser.parse(
-						new InputStreamReader(get.getResponseBodyAsStream()))
-						.getAsJsonObject();
-				System.out.println("Query response: " + response.toString());
+				// JsonArray results = response.get("records").getAsJsonArray();
 
-				writer.write(response.get("totalSize").getAsString()
-						+ " record(s) returned\n\n");
+				// for (int i = 0; i < results.size(); i++) {
+				// writer.write(results.get(i).getAsJsonObject().get("Id")
+				// .getAsString()
+				// + ", "
+				// + results.get(i).getAsJsonObject().get("Name")
+				// .getAsString() + "\n");
+				//
+				// writer.write("<table>");
+				// for (Entry<String, JsonElement> entry : response.entrySet())
+				// {
+				// String key = entry.getKey();
+				// String value = entry.getValue().toString();
+				//
+				// writer.write("<tr><td>");
+				// writer.write(key);
+				// writer.write("</td>");
+				//
+				// writer.write("<td>");
+				// writer.write(value);
+				// writer.write("</td></tr>");
+				// }
+				// writer.write("</table>");
+				// }
 
-				JsonArray results = response.get("records").getAsJsonArray();
+				for (SObject o : results) {
+					writer.write(o.getId() + ", " + o.getName() + "\n");
 
-				for (int i = 0; i < results.size(); i++) {
-					writer.write(results.get(i).getAsJsonObject().get("Id")
-							.getAsString()
-							+ ", "
-							+ results.get(i).getAsJsonObject().get("Name")
-									.getAsString() + "\n");
-					
 					writer.write("<table>");
-					for (Entry<String, JsonElement> entry : response.entrySet()) {
-						String key = entry.getKey();
-						String value = entry.getValue().toString();
+					for (String key : o.keys()) {
+						String value = o.get(key);
 
 						writer.write("<tr><td>");
 						writer.write(key);
 						writer.write("</td>");
-						
+
 						writer.write("<td>");
 						writer.write(value);
 						writer.write("</td></tr>");
 					}
 					writer.write("</table>");
 
+					// Sentiment__c
+
+					String text = o.get("Subject");
+					text += "\n";
+					text += o.get("Description");
+
+					Sentiment sentiment = analyzer.scoreSentiment(text);
+					if (sentiment == null) {
+						writer.write("No sentiment");
+					} else {
+						writer.write("Sentiment: " + sentiment);
+					}
 				}
+
 				writer.write("\n");
 			}
 		} finally {
@@ -231,6 +270,7 @@ public class DemoREST extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter writer = response.getWriter();
@@ -252,21 +292,21 @@ public class DemoREST extends HttpServlet {
 		showAccounts(instanceUrl, accessToken, writer);
 
 		/*
-		String accountId = createAccount("My New Org", instanceUrl,
-				accessToken, writer);
-
-		showAccount(accountId, instanceUrl, accessToken, writer);
-
-		showAccounts(instanceUrl, accessToken, writer);
-
-		updateAccount(accountId, "My New Org, Inc", "San Francisco",
-				instanceUrl, accessToken, writer);
-
-		showAccount(accountId, instanceUrl, accessToken, writer);
-
-		deleteAccount(accountId, instanceUrl, accessToken, writer);
-
-		showAccounts(instanceUrl, accessToken, writer);
-		*/
+		 * String accountId = createAccount("My New Org", instanceUrl,
+		 * accessToken, writer);
+		 * 
+		 * showAccount(accountId, instanceUrl, accessToken, writer);
+		 * 
+		 * showAccounts(instanceUrl, accessToken, writer);
+		 * 
+		 * updateAccount(accountId, "My New Org, Inc", "San Francisco",
+		 * instanceUrl, accessToken, writer);
+		 * 
+		 * showAccount(accountId, instanceUrl, accessToken, writer);
+		 * 
+		 * deleteAccount(accountId, instanceUrl, accessToken, writer);
+		 * 
+		 * showAccounts(instanceUrl, accessToken, writer);
+		 */
 	}
 }
