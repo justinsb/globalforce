@@ -5,8 +5,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,33 +21,37 @@ import com.google.gson.JsonParser;
 /**
  * Servlet parameters
  */
+@Singleton
 @WebServlet(name = "oauth", urlPatterns = { "/oauth/*", "/oauth" }, initParams = {
-//		// clientId is 'Consumer Key' in the Remote Access UI
-//		@WebInitParam(name = "clientId", value = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d"),
-//		// clientSecret is 'Consumer Secret' in the Remote Access UI
-//		@WebInitParam(name = "clientSecret", value = "295020390184049994"),
-//		// This must be identical to 'Callback URL' in the Remote Access UI
-//		@WebInitParam(name = "redirectUri", value = "https://http://pacific-gorge-1278.herokuapp.com/RestTest/oauth/_callback"),
-//		@WebInitParam(name = "environment", value = "https://login.salesforce.com"),
-		})
+// // clientId is 'Consumer Key' in the Remote Access UI
+// @WebInitParam(name = "clientId", value =
+// "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d"),
+// // clientSecret is 'Consumer Secret' in the Remote Access UI
+// @WebInitParam(name = "clientSecret", value = "295020390184049994"),
+// // This must be identical to 'Callback URL' in the Remote Access UI
+// @WebInitParam(name = "redirectUri", value =
+// "https://http://pacific-gorge-1278.herokuapp.com/RestTest/oauth/_callback"),
+// @WebInitParam(name = "environment", value = "https://login.salesforce.com"),
+})
 public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 	private static final String INSTANCE_URL = "INSTANCE_URL";
 
-	private String clientId = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d";
-	private String clientSecret = "295020390184049994";
-	private String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth/_callback";
-	private String environment = "https://login.salesforce.com";
+	private final String clientId = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d";
+	private final String clientSecret = "295020390184049994";
+	private final String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth/_callback";
+	private final String environment = "https://login.salesforce.com";
 	private String authUrl = null;
 	private String tokenUrl = null;
 
+	@Override
 	public void init() throws ServletException {
-//		clientId = this.getInitParameter("clientId");
-//		clientSecret = this.getInitParameter("clientSecret");
-//		redirectUri = this.getInitParameter("redirectUri");
-//		environment = this.getInitParameter("environment");
+		// clientId = this.getInitParameter("clientId");
+		// clientSecret = this.getInitParameter("clientSecret");
+		// redirectUri = this.getInitParameter("redirectUri");
+		// environment = this.getInitParameter("environment");
 
 		try {
 			authUrl = environment
@@ -61,6 +65,7 @@ public class OAuthServlet extends HttpServlet {
 		tokenUrl = environment + "/services/oauth2/token";
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String accessToken = (String) request.getSession().getAttribute(

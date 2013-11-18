@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Map.Entry;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
+@Singleton
 public class DemoREST extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(DemoREST.class);
 
