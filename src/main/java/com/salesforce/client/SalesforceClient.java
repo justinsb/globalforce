@@ -25,7 +25,7 @@ public class SalesforceClient {
 		this.token = token;
 	}
 
-	public SfObjectSchema getSchema(String entity) throws IOException {
+	public SObjectSchema getSchema(String entity) throws IOException {
 		URL url = new URL(baseUrl, "services/data/v20.0/" + entity
 				+ "/describe");
 
@@ -36,7 +36,7 @@ public class SalesforceClient {
 
 		httpclient.executeMethod(get);
 		if (get.getStatusCode() == HttpStatus.SC_OK) {
-			return new SfObjectSchema(get);
+			return new SObjectSchema(get);
 		} else {
 			log.info("Bad response fetching schema: {}", get.getStatusLine());
 			throw new IOException("Unexpected status code");
