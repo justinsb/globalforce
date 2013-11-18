@@ -291,11 +291,12 @@ public class DemoREST extends HttpServlet {
 				INSTANCE_URL);
 
 		if (accessToken == null) {
-			writer.write("Error - no access token");
+			log.info("No access token; redirecting");
+			response.sendRedirect(request.getContextPath() + "/oauth");
 			return;
 		}
 
-		writer.write("We have an access token: " + accessToken + "\n"
+		log.info("We have an access token: " + accessToken + "\n"
 				+ "Using instance " + instanceUrl + "\n\n");
 
 		showAccounts(instanceUrl, accessToken, writer);
