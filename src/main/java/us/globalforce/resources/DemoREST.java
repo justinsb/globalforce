@@ -59,7 +59,7 @@ public class DemoREST extends HttpServlet {
 				"q",
 				"SELECT Id, Name, Sentiment__c, Subject, Description from Case WHERE Sentiment__c == null LIMIT 100");
 		params[0] = new NameValuePair("q",
-				"SELECT Id, Name, Sentiment__c, Subject, Description from Case LIMIT 100");
+				"SELECT Id, Name from Case LIMIT 100");
 		get.setQueryString(params);
 
 		log.info("Running API query: {}", params[0]);
