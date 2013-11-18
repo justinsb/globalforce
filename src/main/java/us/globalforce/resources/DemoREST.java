@@ -48,7 +48,7 @@ public class DemoREST extends HttpServlet {
 		NameValuePair[] params = new NameValuePair[1];
 
 		params[0] = new NameValuePair("q",
-				"SELECT Name, Id from Account LIMIT 100");
+				"SELECT Name, Id from Case LIMIT 100");
 		get.setQueryString(params);
 
 		try {
@@ -74,6 +74,22 @@ public class DemoREST extends HttpServlet {
 							+ ", "
 							+ results.get(i).getAsJsonObject().get("Name")
 									.getAsString() + "\n");
+					
+					writer.write("<table>");
+					for (Entry<String, JsonElement> entry : response.entrySet()) {
+						String key = entry.getKey();
+						String value = entry.getValue().toString();
+
+						writer.write("<tr><td>");
+						writer.write(key);
+						writer.write("</td>");
+						
+						writer.write("<td>");
+						writer.write(value);
+						writer.write("</td></tr>");
+					}
+					writer.write("</table>");
+
 				}
 				writer.write("\n");
 			}
@@ -235,6 +251,7 @@ public class DemoREST extends HttpServlet {
 
 		showAccounts(instanceUrl, accessToken, writer);
 
+		/*
 		String accountId = createAccount("My New Org", instanceUrl,
 				accessToken, writer);
 
@@ -250,5 +267,6 @@ public class DemoREST extends HttpServlet {
 		deleteAccount(accountId, instanceUrl, accessToken, writer);
 
 		showAccounts(instanceUrl, accessToken, writer);
+		*/
 	}
 }
