@@ -84,7 +84,7 @@ public class DemoREST extends HttpServlet {
             String description = o.findString("Description", "");
             if (!Strings.isNullOrEmpty(description)) {
                 if (text.length() != 0) {
-                    text.append("\n");
+                    text.append("\n\n\n");
                 }
                 text.append(description);
             }
