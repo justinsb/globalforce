@@ -1,14 +1,23 @@
 package us.globalforce;
 
-import java.io.File;
+import java.util.EnumSet;
+import java.util.List;
 
-import org.apache.catalina.startup.Tomcat;
+import javax.servlet.DispatcherType;
 
-import us.globalforce.resources.DemoREST;
-import us.globalforce.resources.OAuthServlet;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
+import us.globalforce.guice.GfServletModule;
+
+import com.google.common.collect.Lists;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.servlet.GuiceFilter;
 
 public class Main {
-
 	public static void main(String[] args) throws Exception {
 		// Server server = new Server(Integer.valueOf(System.getenv("PORT")));
 		// ServletContextHandler context = new ServletContextHandler(
@@ -22,9 +31,6 @@ public class Main {
 		// server.start();
 		// server.join();
 
-		String webappDirLocation = "src/main/webapp/";
-		Tomcat tomcat = new Tomcat();
-
 		// The port that we should run on can be set into an environment
 		// variable
 		// Look for that variable and default to 8080 if it isn't there.
@@ -33,13 +39,35 @@ public class Main {
 			webPort = "8080";
 		}
 
-		tomcat.setPort(Integer.valueOf(webPort));
+		List<Module> modules = Lists.newArrayList();
+		modules.add(new GfServletModule());
+		Injector injector = Guice.createInjector(modules);
 
-		tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
-		System.out.println("configuring app with basedir: "
-				+ new File("./" + webappDirLocation).getAbsolutePath());
+		Server server = new Server(Integer.valueOf(webPort));
+		ServletContextHandler root = new ServletContextHandler(
+				ServletContextHandler.SESSIONS);
+		root.setContextPath("/"); // technically not required, as "/" is the
+									// default
 
-		tomcat.start();
-		tomcat.getServer().await();
+		root.addFilter(GuiceFilter.class, "/*",
+				EnumSet.of(DispatcherType.REQUEST));
+		root.addServlet(DefaultServlet.class, "/");
+
+		server.setHandler(root);
+
+		server.start();
+
+		// String webappDirLocation = "src/main/webapp/";
+		// Tomcat tomcat = new Tomcat();
+		//
+
+		// tomcat.setPort(Integer.valueOf(webPort));
+		//
+		// tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
+		// System.out.println("configuring app with basedir: "
+		// + new File("./" + webappDirLocation).getAbsolutePath());
+		//
+		// tomcat.start();
+		// tomcat.getServer().await();
 	}
 }
