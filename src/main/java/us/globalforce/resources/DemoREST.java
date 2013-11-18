@@ -3,8 +3,10 @@ package us.globalforce.resources;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.Map.Entry;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -30,8 +31,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.salesforce.client.AuthToken;
 import com.salesforce.client.SObject;
 import com.salesforce.client.SObjectList;
+import com.salesforce.client.SalesforceClient;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
 @Singleton
@@ -44,117 +47,57 @@ public class DemoREST extends HttpServlet {
 
     static final Gson gson = new Gson();
 
-    private void showAccounts(String instanceUrl, String accessToken, PrintWriter writer) throws ServletException,
-            IOException {
-        HttpClient httpclient = new HttpClient();
-        GetMethod get = new GetMethod(instanceUrl + "/services/data/v20.0/query");
+    @Inject
+    SentimentAnalyzer sentimentAnalyzer;
 
-        // set the token in the header
-        get.setRequestHeader("Authorization", "OAuth " + accessToken);
+    @Inject
+    HttpClient httpClient;
 
-        // set the SOQL as a query param
-        NameValuePair[] params = new NameValuePair[1];
+    private void showAccounts(SalesforceClient client, PrintWriter writer) throws ServletException, IOException {
 
-        params[0] = new NameValuePair("q",
-                "SELECT Id, Name, Sentiment__c, Subject, Description from Case WHERE Sentiment__c == null LIMIT 100");
-        params[0] = new NameValuePair("q", "SELECT Id,Subject,Description from Case LIMIT 100");
-        get.setQueryString(params);
+        SObjectList results = client.runQuery("SELECT Id,Subject,Description from Case LIMIT 100");
 
-        log.info("Running API query: {}", params[0]);
+        for (SObject o : results) {
+            writer.write(o.getId() + ", " + o.getName() + "\n");
 
-        SentimentAnalyzer analyzer = new SentimentAnalyzer();
+            writer.write("<table>");
+            for (String key : o.keys()) {
+                String value = o.find(key);
 
-        try {
-            httpclient.executeMethod(get);
-            if (get.getStatusCode() == HttpStatus.SC_OK) {
-                SObjectList results = new SObjectList(get);
-                //
-                // // Now lets use the standard java json classes to work with
-                // the
-                // // results
-                // JsonParser parser = new JsonParser();
-                //
-                // JsonObject response = parser.parse(
-                // new InputStreamReader(get.getResponseBodyAsStream()))
-                // .getAsJsonObject();
-                // System.out.println("Query response: " + response.toString());
-                //
-                // writer.write(response.get("totalSize").getAsString()
-                // + " record(s) returned\n\n");
+                writer.write("<tr><td>");
+                writer.write(key);
+                writer.write("</td>");
 
-                // JsonArray results = response.get("records").getAsJsonArray();
-
-                // for (int i = 0; i < results.size(); i++) {
-                // writer.write(results.get(i).getAsJsonObject().get("Id")
-                // .getAsString()
-                // + ", "
-                // + results.get(i).getAsJsonObject().get("Name")
-                // .getAsString() + "\n");
-                //
-                // writer.write("<table>");
-                // for (Entry<String, JsonElement> entry : response.entrySet())
-                // {
-                // String key = entry.getKey();
-                // String value = entry.getValue().toString();
-                //
-                // writer.write("<tr><td>");
-                // writer.write(key);
-                // writer.write("</td>");
-                //
-                // writer.write("<td>");
-                // writer.write(value);
-                // writer.write("</td></tr>");
-                // }
-                // writer.write("</table>");
-                // }
-
-                for (SObject o : results) {
-                    writer.write(o.getId() + ", " + o.getName() + "\n");
-
-                    writer.write("<table>");
-                    for (String key : o.keys()) {
-                        String value = o.find(key);
-
-                        writer.write("<tr><td>");
-                        writer.write(key);
-                        writer.write("</td>");
-
-                        writer.write("<td>");
-                        writer.write(value);
-                        writer.write("</td></tr>");
-                    }
-                    writer.write("</table>");
-
-                    // Sentiment__c
-
-                    StringBuilder text = new StringBuilder();
-                    String subject = o.find("Subject");
-                    if (!Strings.isNullOrEmpty(subject)) {
-                        text.append(subject);
-                    }
-                    String description = o.find("Description");
-                    if (!Strings.isNullOrEmpty(description)) {
-                        if (text.length() != 0) {
-                            text.append("\n");
-                        }
-                        text.append(description);
-                    }
-
-                    Sentiment sentiment = analyzer.scoreSentiment(text.toString());
-                    if (sentiment == null) {
-                        writer.write("No sentiment");
-                    } else {
-                        writer.write("Sentiment: " + sentiment);
-                    }
-                }
-
-                writer.write("\n");
-            } else {
-                log.info("Unexpected API response: {}", get.getStatusLine());
+                writer.write("<td>");
+                writer.write(value);
+                writer.write("</td></tr>");
             }
-        } finally {
-            get.releaseConnection();
+            writer.write("</table>");
+
+            // Sentiment__c
+
+            StringBuilder text = new StringBuilder();
+            String subject = o.find("Subject");
+            if (!Strings.isNullOrEmpty(subject)) {
+                text.append(subject);
+            }
+            String description = o.find("Description");
+            if (!Strings.isNullOrEmpty(description)) {
+                if (text.length() != 0) {
+                    text.append("\n");
+                }
+                text.append(description);
+            }
+
+            Sentiment sentiment = sentimentAnalyzer.scoreSentiment(text.toString());
+            if (sentiment == null) {
+                writer.write("No sentiment");
+            } else {
+                writer.write("Sentiment: " + sentiment);
+            }
         }
+
+        writer.write("\n");
     }
 
     private String createAccount(String name, String instanceUrl, String accessToken, PrintWriter writer)
@@ -290,7 +233,9 @@ public class DemoREST extends HttpServlet {
 
         log.info("We have an access token: " + accessToken + "\n" + "Using instance " + instanceUrl + "\n\n");
 
-        showAccounts(instanceUrl, accessToken, writer);
+        SalesforceClient client = new SalesforceClient(httpClient, URI.create(instanceUrl), new AuthToken(accessToken));
+
+        showAccounts(client, writer);
 
         /*
          * String accountId = createAccount("My New Org", instanceUrl, accessToken, writer);

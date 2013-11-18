@@ -9,15 +9,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 public class SObjectList implements Iterable<SObject> {
     final List<SObject> results;
 
-    public SObjectList(GetMethod get) throws JsonIOException, JsonSyntaxException, IOException {
+    public SObjectList(GetMethod get) throws IOException {
         JsonParser parser = new JsonParser();
         JsonObject response = parser.parse(new InputStreamReader(get.getResponseBodyAsStream())).getAsJsonObject();
 
