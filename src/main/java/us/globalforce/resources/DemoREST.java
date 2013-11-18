@@ -58,18 +58,18 @@ public class DemoREST extends HttpServlet {
         SObjectList results = client.runQuery("SELECT Id,Subject,Description from Case LIMIT 100");
 
         for (SObject o : results) {
-            writer.write(o.getId() + ", " + o.getName() + "\n");
+            writer.write(o.getId() + ", " + o.findString("Subject", "") + "\n");
 
             writer.write("<table>");
             for (String key : o.keys()) {
-                String value = o.find(key);
+                Object value = o.find(key);
 
                 writer.write("<tr><td>");
                 writer.write(key);
                 writer.write("</td>");
 
                 writer.write("<td>");
-                writer.write(value);
+                writer.write(value.toString());
                 writer.write("</td></tr>");
             }
             writer.write("</table>");
@@ -77,11 +77,11 @@ public class DemoREST extends HttpServlet {
             // Sentiment__c
 
             StringBuilder text = new StringBuilder();
-            String subject = o.find("Subject");
+            String subject = o.findString("Subject", "");
             if (!Strings.isNullOrEmpty(subject)) {
                 text.append(subject);
             }
-            String description = o.find("Description");
+            String description = o.findString("Description", "");
             if (!Strings.isNullOrEmpty(description)) {
                 if (text.length() != 0) {
                     text.append("\n");

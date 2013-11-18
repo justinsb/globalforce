@@ -22,11 +22,7 @@ public class SObject {
     }
 
     public String getId() {
-        return find("Id");
-    }
-
-    public String getName() {
-        return find("Name");
+        return getString("Id");
     }
 
     public Set<String> keys() {
@@ -39,7 +35,15 @@ public class SObject {
         return keys;
     }
 
-    public String find(String key) {
+    public String getString(String key) {
+        String value = findString(key, null);
+        if (value == null) {
+            throw new IllegalArgumentException("Value not found: " + key);
+        }
+        return value;
+    }
+
+    public Object find(String key) {
         JsonElement jsonElement = json.get(key);
         if (jsonElement == null) {
             return null;
@@ -49,11 +53,25 @@ public class SObject {
             if (primitive.isString()) {
                 return primitive.getAsString();
             } else {
-                log.warn("Key was found, but was not json string: {}={}", key, jsonElement);
+                log.warn("Key was found, but was not known-type: {}={}", key, jsonElement);
             }
         } else {
-            log.warn("Key was found, but was not json primitive: {}={}", key, jsonElement);
+            return jsonElement;
         }
         return null;
+    }
+
+    public String findString(String key, String defaultValue) {
+        JsonElement jsonElement = json.get(key);
+        Object value = find(key);
+
+        if (value != null) {
+            if (value instanceof String) {
+                return (String) value;
+            }
+
+            log.warn("Key was found, but was not string: {}={}", key, jsonElement);
+        }
+        return defaultValue;
     }
 }
