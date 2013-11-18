@@ -28,8 +28,8 @@ public class SentimentAnalyzer {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
 
-        // Paragraphs are definitely sentences
-        props.setProperty("ssplit.newlineIsSentenceBreak", "two");
+        // // Paragraphs are definitely sentences
+        // props.setProperty("ssplit.newlineIsSentenceBreak", "two");
 
         pipeline = new StanfordCoreNLP(props);
     }
