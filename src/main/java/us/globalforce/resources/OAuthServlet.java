@@ -38,7 +38,7 @@ public class OAuthServlet extends HttpServlet {
 
 	private String clientId = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d";
 	private String clientSecret = "295020390184049994";
-	private String redirectUri = "https://http://pacific-gorge-1278.herokuapp.com/RestTest/oauth/_callback";
+	private String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth/_callback";
 	private String environment = "https://login.salesforce.com";
 	private String authUrl = null;
 	private String tokenUrl = null;
