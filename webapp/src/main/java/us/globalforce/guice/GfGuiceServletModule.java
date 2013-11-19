@@ -8,6 +8,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 
 import us.globalforce.resources.DemoREST;
 import us.globalforce.resources.OAuthServlet;
+import us.globalforce.resources.RootResource;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
@@ -37,6 +38,8 @@ public class GfGuiceServletModule extends JerseyServletModule {
         // install(new JpaPersistModule("mainJpaUnit")); // like we saw earlier.
 
         // filter("/*").through(PersistFilter.class);
+
+        bind(RootResource.class);
 
         serve("/DemoREST").with(DemoREST.class);
         serve("/oauth").with(OAuthServlet.class);
