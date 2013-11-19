@@ -18,6 +18,7 @@ import com.fathomdb.jpa.impl.ResultSetMappers;
 import com.fathomdb.jpa.impl.ResultSetMappersProvider;
 import com.fathomdb.server.http.JettyWebServerBuilder;
 import com.fathomdb.server.http.WebServerBuilder;
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.util.Providers;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -65,6 +66,11 @@ public class GfGuiceModule extends AbstractModule {
         String jdbcUsername = dbUri.getUserInfo().split(":")[0];
         String jdbcPassword = dbUri.getUserInfo().split(":")[1];
         String jdbcUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+
+        String query = dbUri.getQuery();
+        if (!Strings.isNullOrEmpty(query)) {
+            jdbcUrl += "?" + query;
+        }
 
         try {
             Class.forName("org.postgresql.Driver");
