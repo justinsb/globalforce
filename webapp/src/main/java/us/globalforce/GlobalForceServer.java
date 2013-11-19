@@ -80,13 +80,12 @@ public class GlobalForceServer {
         // EnumSet<SslOption> options = EnumSet.noneOf(SslOption.class);
         // serverBuilder.addHttpsConnector(port, options);
 
+        serverBuilder.enableSessions();
+        serverBuilder.enableRequestLogging();
+
         serverBuilder.addHttpConnector(port, true);
 
         serverBuilder.addGuiceContext("/", injector);
-
-        serverBuilder.enableRequestLogging();
-
-        serverBuilder.enableSessions();
 
         this.jettyServer = serverBuilder.start();
 
