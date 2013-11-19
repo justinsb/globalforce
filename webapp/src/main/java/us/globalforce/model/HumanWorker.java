@@ -1,5 +1,6 @@
 package us.globalforce.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -11,5 +12,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class HumanWorker {
     @Id
     public int id;
+    @Column
+    public String login;
+    @Column
+    public String name;
 
 }
