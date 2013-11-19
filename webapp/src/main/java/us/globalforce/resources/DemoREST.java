@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.List;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
@@ -25,9 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.services.Sentiment;
-import us.globalforce.services.SentimentAnalyzer;
+import us.globalforce.services.SentimentService;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -49,10 +47,10 @@ public class DemoREST extends HttpServlet {
     static final Gson gson = new Gson();
 
     @Inject
-    SentimentAnalyzer sentimentAnalyzer;
+    HttpClient httpClient;
 
     @Inject
-    HttpClient httpClient;
+    SentimentService sentimentService;
 
     private void showAccounts(SalesforceClient client, PrintWriter writer) throws ServletException, IOException {
 
@@ -75,16 +73,9 @@ public class DemoREST extends HttpServlet {
             }
             writer.write("</table>");
 
-            // Sentiment__c
-
-            List<String> sections = Lists.newArrayList();
-
-            sections.add(o.findString("Subject", ""));
-            sections.add(o.findString("Description", ""));
-
-            Sentiment sentiment = sentimentAnalyzer.scoreSentiment(sections);
+            Sentiment sentiment = sentimentService.findSentiment(o);
             if (sentiment == null) {
-                writer.write("No sentiment");
+                writer.write("No sentiment (yet)");
             } else {
                 writer.write("Sentiment: " + sentiment);
             }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -34,12 +35,11 @@ public class SentimentAnalyzer {
         pipeline = new StanfordCoreNLP(props);
     }
 
-    public Sentiment scoreSentiment(List<String> sections) {
+    public SentimentAnalysis scoreSentiment(List<String> sections) {
         // Synchronized because CoreNLP not thread safe
         synchronized (pipeline) {
-            float sumX2 = 0;
-            float sumX = 0;
-            float n = 0;
+            List<String> sentences = Lists.newArrayList();
+            List<Sentiment> sentiments = Lists.newArrayList();
 
             for (String text : sections) {
                 if (Strings.isNullOrEmpty(text)) {
@@ -54,38 +54,34 @@ public class SentimentAnalyzer {
                 Annotation annotation = pipeline.process(text);
                 for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
                     Tree tree = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class);
-                    int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
-                    if (sentiment >= 0 && sentiment <= 4) {
-                        float s = sentiment;
-                        sumX += s;
-                        sumX2 += s * s;
-                        n++;
+                    int sentimentScore = RNNCoreAnnotations.getPredictedClass(tree);
+                    Sentiment sentiment = scoreToSentiment(sentimentScore);
 
-                        log.debug("Sentiment: {} for {}", sentiment, sentence.toString());
-                    }
+                    sentences.add(sentence.toString());
+                    sentiments.add(sentiment);
+
+                    log.debug("Sentiment: {} for {}", sentiment, sentence.toString());
                 }
             }
 
-            if (n == 0) {
-                return null;
-            }
+            return new SentimentAnalysis(sentences, sentiments);
+        }
+    }
 
-            int mean = Math.round(sumX / n);
-
-            switch (mean) {
-            case 0:
-                return Sentiment.STRONG_NEGATIVE;
-            case 1:
-                return Sentiment.NEGATIVE;
-            case 2:
-                return Sentiment.NEUTRAL;
-            case 3:
-                return Sentiment.POSITIVE;
-            case 4:
-                return Sentiment.STRONG_POSITIVE;
-            default:
-                return null;
-            }
+    public static Sentiment scoreToSentiment(int score) {
+        switch (score) {
+        case 0:
+            return Sentiment.STRONG_NEGATIVE;
+        case 1:
+            return Sentiment.NEGATIVE;
+        case 2:
+            return Sentiment.NEUTRAL;
+        case 3:
+            return Sentiment.POSITIVE;
+        case 4:
+            return Sentiment.STRONG_POSITIVE;
+        default:
+            return null;
         }
     }
 }

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.model.HumanWorker;
+import us.globalforce.model.Task;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.jpa.impl.ResultSetMappers;
@@ -39,7 +40,8 @@ public class GfGuiceModule extends AbstractModule {
         DataSource ds = buildDataSource();
         bind(DataSource.class).toInstance(ds);
 
-        bind(ResultSetMappers.class).toProvider(Providers.guicify(ResultSetMappersProvider.build(HumanWorker.class)));
+        bind(ResultSetMappers.class).toProvider(
+                Providers.guicify(ResultSetMappersProvider.build(HumanWorker.class, Task.class)));
 
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.setMaxConnectionsPerHost(10);
