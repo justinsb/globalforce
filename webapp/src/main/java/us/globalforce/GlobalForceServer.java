@@ -86,6 +86,8 @@ public class GlobalForceServer {
 
         serverBuilder.enableRequestLogging();
 
+        serverBuilder.enableSessions();
+
         this.jettyServer = serverBuilder.start();
 
         metricReporter.start();
