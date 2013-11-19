@@ -55,6 +55,7 @@ public class GfGuiceServletModule extends JerseyServletModule {
             JacksonJsonProvider jacksonJsonProvider = new JacksonJsonProvider(objectMapper);
             bind(JacksonJsonProvider.class).toInstance(jacksonJsonProvider);
         }
+
         {
             Map<String, String> params = new HashMap<String, String>();
             bind(DefaultServlet.class).in(Scopes.SINGLETON);
