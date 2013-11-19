@@ -162,7 +162,7 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
-							<mainClass>us.globalforce.Main</mainClass>
+							<mainClass>us.globalforce.GlobalForceServer</mainClass>
 							<name>webapp</name>
 						</program>
 					</programs>
