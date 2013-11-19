@@ -24,8 +24,10 @@ function setTaskResult(decision) {
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		data: currentTask,
+		data: JSON.stringify(currentTask),
 		url: "/api/tasks",
+		contentType: "application/json",
+		processData: false,
 		success: function( tasks ) {
 		}
 	});	
