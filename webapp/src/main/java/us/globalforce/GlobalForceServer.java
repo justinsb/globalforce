@@ -81,7 +81,7 @@ public class GlobalForceServer {
         // serverBuilder.addHttpsConnector(port, options);
 
         serverBuilder.enableSessions();
-        serverBuilder.enableRequestLogging();
+        // serverBuilder.enableRequestLogging();
 
         serverBuilder.addHttpConnector(port, true);
 
