@@ -1,5 +1,8 @@
 package us.globalforce.guice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -47,13 +50,19 @@ public class GfGuiceModule extends AbstractModule {
     }
 
     private DataSource buildDataSource() {
-        String driverClassName = "org.postgresql.Driver";
-        String jdbcUrl = configuration.get("jdbc.url");
-        String jdbcUsername = configuration.get("jdbc.username");
-        String jdbcPassword = configuration.get("jdbc.password");
+        URI dbUri;
+        try {
+            dbUri = new URI(System.getenv("DATABASE_URL"));
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Cannot parse DATABASE_URL", e);
+        }
+
+        String jdbcUsername = dbUri.getUserInfo().split(":")[0];
+        String jdbcPassword = dbUri.getUserInfo().split(":")[1];
+        String jdbcUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
         try {
-            Class.forName(driverClassName);
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             log.warn("Unable to load PG driver", e);
         }
