@@ -11,4 +11,4 @@ ls models/
 CLASSPATH_PREFIX="models/stanford-corenlp-3.3.0-models.jar"
 export CLASSPATH_PREFIX
 
-sh target/bin/webapp
+sh webapp/target/bin/webapp
