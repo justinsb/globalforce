@@ -48,7 +48,7 @@ public class JdbcRepository {
         @Query("SELECT * FROM task WHERE worker is null and id < ? LIMIT 1")
         List<Task> firstOpenTaskLT(long pivot);
 
-        @Query("SELECT * FROM task WHERE worker is null and id < ? LIMIT 1")
+        @Query("SELECT * FROM task WHERE worker is null and id > ? LIMIT 1")
         List<Task> firstOpenTaskGT(long pivot);
 
         @Query(Query.AUTOMATIC_INSERT)
