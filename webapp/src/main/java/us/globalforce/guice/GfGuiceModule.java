@@ -21,6 +21,7 @@ import com.fathomdb.server.http.WebServerBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.util.Providers;
 import com.jolbox.bonecp.BoneCPDataSource;
+import com.salesforce.client.oauth.OAuthClient;
 
 public class GfGuiceModule extends AbstractModule {
     private static final Logger log = LoggerFactory.getLogger(GfGuiceModule.class);
@@ -45,10 +46,12 @@ public class GfGuiceModule extends AbstractModule {
 
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.setMaxConnectionsPerHost(10);
-        HttpClient client = new HttpClient(connectionManager);
+        HttpClient httpClient = new HttpClient(connectionManager);
 
-        bind(HttpClient.class).toInstance(client);
+        bind(HttpClient.class).toInstance(httpClient);
 
+        OAuthClient oauthClient = new OAuthClient(httpClient);
+        bind(OAuthClient.class).toInstance(oauthClient);
     }
 
     private DataSource buildDataSource() {

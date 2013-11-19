@@ -1,10 +1,8 @@
 package us.globalforce.resources;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,13 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.salesforce.client.oauth.OAuthClient;
+import com.salesforce.client.oauth.OAuthToken;
 
 /**
  * Servlet parameters
@@ -43,79 +39,36 @@ public class OAuthServlet extends HttpServlet {
     private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String INSTANCE_URL = "INSTANCE_URL";
 
-    private final String clientId = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d";
-    private final String clientSecret = "295020390184049994";
-    private final String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth/_callback";
-    private final String environment = "https://login.salesforce.com";
-    private String authUrl = null;
-    private String tokenUrl = null;
-
-    @Override
-    public void init() throws ServletException {
-        // clientId = this.getInitParameter("clientId");
-        // clientSecret = this.getInitParameter("clientSecret");
-        // redirectUri = this.getInitParameter("redirectUri");
-        // environment = this.getInitParameter("environment");
-
-        try {
-            authUrl = environment + "/services/oauth2/authorize?response_type=code&client_id=" + clientId
-                    + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new ServletException(e);
-        }
-
-        tokenUrl = environment + "/services/oauth2/token";
-    }
+    @Inject
+    OAuthClient oauthClient;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String accessToken = (String) request.getSession().getAttribute(ACCESS_TOKEN);
 
         if (accessToken == null) {
-            String instanceUrl = null;
-
+            // TODO: Just use /oauth; check for presence of code request parameter
+            // (Then we can easily make this a resource, as well!)
             if (request.getRequestURI().endsWith("oauth")) {
                 // we need to send the user to authorize
-                response.sendRedirect(authUrl);
+                response.sendRedirect(oauthClient.getAuthUrl().toString());
                 return;
-            } else {
-                System.out.println("Auth successful - got callback");
-
-                String code = request.getParameter("code");
-
-                HttpClient httpclient = new HttpClient();
-
-                PostMethod post = new PostMethod(tokenUrl);
-                post.addParameter("code", code);
-                post.addParameter("grant_type", "authorization_code");
-                post.addParameter("client_id", clientId);
-                post.addParameter("client_secret", clientSecret);
-                post.addParameter("redirect_uri", redirectUri);
-
-                try {
-                    httpclient.executeMethod(post);
-
-                    JsonParser parser = new JsonParser();
-                    JsonObject authResponse = parser.parse(new InputStreamReader(post.getResponseBodyAsStream()))
-                            .getAsJsonObject();
-                    System.out.println("Auth response: " + authResponse.toString());
-
-                    accessToken = authResponse.get("access_token").getAsString();
-                    instanceUrl = authResponse.get("instance_url").getAsString();
-
-                    log.info("Got access token: " + accessToken);
-                } finally {
-                    post.releaseConnection();
-                }
             }
+
+            log.info("Auth successful - got callback");
+
+            String code = request.getParameter("code");
+            OAuthToken token = oauthClient.validate(code);
+
+            // TODO: We could just set the token direct into the session!
 
             // Set a session attribute so that other servlets can get the access
             // token
-            request.getSession().setAttribute(ACCESS_TOKEN, accessToken);
+            request.getSession().setAttribute(ACCESS_TOKEN, token.getAccessToken());
 
             // We also get the instance URL from the OAuth response, so set it
             // in the session too
-            request.getSession().setAttribute(INSTANCE_URL, instanceUrl);
+            request.getSession().setAttribute(INSTANCE_URL, token.getInstanceUrl());
         }
 
         response.sendRedirect(request.getContextPath() + "/DemoREST");
