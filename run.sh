@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p /tmp/weblogs
+ln -s /tmp/weblogs weblogs
+
 mkdir -p models
 
 if [ ! -f "models/stanford-corenlp-3.3.0-models.jar" ]; then
