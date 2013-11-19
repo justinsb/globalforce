@@ -1,0 +1,3 @@
+[submodule "fathomdb-shared"]
+	path = fathomdb-shared
+	url = git@github.com:fathomdb/fathomdb-shared.git
