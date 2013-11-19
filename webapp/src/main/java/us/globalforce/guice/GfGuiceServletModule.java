@@ -9,6 +9,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import us.globalforce.resources.DemoREST;
 import us.globalforce.resources.OAuthServlet;
 import us.globalforce.resources.RootResource;
+import us.globalforce.resources.TasksResource;
 import us.globalforce.resources.WorkersResource;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -42,6 +43,7 @@ public class GfGuiceServletModule extends JerseyServletModule {
 
         bind(RootResource.class);
         bind(WorkersResource.class);
+        bind(TasksResource.class);
 
         serve("/DemoREST").with(DemoREST.class);
         serve("/oauth").with(OAuthServlet.class);

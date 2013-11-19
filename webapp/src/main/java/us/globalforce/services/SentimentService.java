@@ -26,6 +26,7 @@ public class SentimentService {
         Object sentimentValue = o.find(FIELD_SENTIMENT);
 
         if (sentimentValue != null) {
+            // TODO: Store the value in Salesforce and retrieve it!
             throw new UnsupportedOperationException();
         }
 
@@ -45,6 +46,7 @@ public class SentimentService {
                 String sentence = sentences.get(i);
                 // Sentiment sentiment = analysis.getSentiments().get(i);
 
+                // TODO: Once we have more confidence in the model, only create tasks where we're not sure
                 repository.addTask(ProblemType.Sentiment, objectId, i, sentence);
             }
         } else {

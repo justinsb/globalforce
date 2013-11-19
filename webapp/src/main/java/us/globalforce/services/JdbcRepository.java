@@ -38,6 +38,9 @@ public class JdbcRepository {
         @Query("SELECT * FROM task WHERE problem=? AND objectid=?")
         List<Task> listTasks(String problem, String objectId);
 
+        @Query("SELECT * FROM task WHERE worker is null")
+        List<Task> listAllOpenTasks();
+
         @Query(Query.AUTOMATIC_INSERT)
         void insertTask(Task task);
     }
@@ -80,5 +83,11 @@ public class JdbcRepository {
             v = -v;
         }
         return v;
+    }
+
+    @JdbcTransaction
+    public List<Task> listAllOpenTasks() {
+        Queries queries = queryFactory.get(Queries.class);
+        return queries.listAllOpenTasks();
     }
 }
