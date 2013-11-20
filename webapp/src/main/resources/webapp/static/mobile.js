@@ -49,8 +49,21 @@ function addToQueue(tasks) {
 		if (queue.length == 0 && currentTask === null) {
 			setCurrentTask(task);
 		} else {
-			queue.push(task);
+			var found = false;
+			for (var j = 0; j < queue.length; j++) {
+				if (queue[j].id == task.id) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				queue.push(task);
+			}
 		}
+	}
+	
+	if (queue.length <= MIN_QUEUE_LENGTH) {
+		reloadQueue();
 	}
 }
 
@@ -59,7 +72,7 @@ function reloadQueue() {
 		return;
 	}
 	
-	url = "/api/tasks/assign?n=5";
+	url = "/api/tasks/assign?n=10";
 	for (var i = 0; i < queue.length; i++) {
 		var task = queue[i];
 		url = url + "&veto=" + task.id;
@@ -74,7 +87,7 @@ function reloadQueue() {
 		},
 		error: function() {
 			loading = false;
-			 window.setTimeout(function() {
+			window.setTimeout(function() {
      			reloadQueue();
    			}, 200);
 		}
