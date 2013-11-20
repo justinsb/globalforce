@@ -55,7 +55,7 @@ function addToQueue(tasks) {
 		}
 		
 		taskHistory.push(task.id);
-		while (taskHistory.length() > MAX_HISTORY) {
+		while (taskHistory.length > MAX_HISTORY) {
 			taskHistory.shift()
 		}
 		
