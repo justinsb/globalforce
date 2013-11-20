@@ -15,6 +15,7 @@ public class OAuthToken implements Serializable {
 
     private final String accessToken;
     private final String instanceUrl;
+    private final String refreshToken;
     private final String idUrl;
 
     private final String organizationId;
@@ -27,6 +28,7 @@ public class OAuthToken implements Serializable {
     public OAuthToken(JsonObject authResponse) throws IOException {
         accessToken = authResponse.get("access_token").getAsString();
         instanceUrl = authResponse.get("instance_url").getAsString();
+        refreshToken = authResponse.get("refresh_token").getAsString();
         idUrl = authResponse.get("id").getAsString();
 
         URL u = new URL(idUrl);
@@ -38,6 +40,10 @@ public class OAuthToken implements Serializable {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public String getAccessToken() {
@@ -71,8 +77,8 @@ public class OAuthToken implements Serializable {
 
     @Override
     public String toString() {
-        return "OAuthToken [accessToken=" + accessToken + ", instanceUrl=" + instanceUrl + ", idUrl=" + idUrl
-                + ", organizationId=" + organizationId + ", userId=" + userId + "]";
+        return "OAuthToken [accessToken=" + accessToken + ", instanceUrl=" + instanceUrl + ", refreshToken="
+                + refreshToken + ", idUrl=" + idUrl + ", organizationId=" + organizationId + ", userId=" + userId + "]";
     }
 
 }
