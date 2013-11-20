@@ -51,7 +51,7 @@ public class SalesforceClient {
     }
 
     public SObjectList runQuery(String soql) throws IOException {
-        URL url = new URL(baseUrl, "services/data/v20.0/query");
+        URL url = new URL(baseUrl, "services/data/v29.0/query");
 
         GetMethod get = new GetMethod(url.toString());
 
