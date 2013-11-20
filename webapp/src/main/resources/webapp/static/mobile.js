@@ -103,13 +103,12 @@ function reloadQueue() {
 			loading = false;
 			addToQueue(tasks);
 		},
-		error: function( xhr, status, e) {
-			var statusCode = xhr.statusCode();
-			if (statusCode == 401) {
-				window.location = '/';
-				return;
-			}
-			
+		statusCode: {
+    		401: function() {
+      			window.location = '/';
+	    	}
+	    },
+		error: function( ) {
 			loading = false;
 			window.setTimeout(function() {
      			reloadQueue();
