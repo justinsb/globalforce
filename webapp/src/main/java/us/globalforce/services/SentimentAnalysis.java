@@ -29,22 +29,24 @@ public class SentimentAnalysis {
     }
 
     public Sentiment getOverall() {
-        float sumX2 = 0;
-        float sumX = 0;
-        float n = 0;
+        double sumX3 = 0;
+        double sumX2 = 0;
+        double sumX = 0;
+        double n = 0;
 
         for (Sentiment sentiment : sentiments) {
             if (sentiment == null) {
                 continue;
             }
-            float s = sentiment.getScore();
+            double s = sentiment.getScore();
             sumX += s;
             sumX2 += s * s;
+            sumX3 += s * s * s;
             n++;
         }
 
-        int mean = Math.round(sumX / n);
-
-        return Sentiment.fromScore(mean);
+        // int measure = Math.round(sumX / n);
+        int measure = (int) Math.round(Math.pow(sumX3 / n, 1.0 / 3.0));
+        return Sentiment.fromScore(measure);
     }
 }
