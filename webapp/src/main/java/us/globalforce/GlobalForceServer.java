@@ -50,6 +50,7 @@ public class GlobalForceServer {
     public static void main(String[] args) throws Exception {
         // LogbackHook.attachToRootLogger();
         System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
+        System.setProperty("org.slf4j.simplelogger.log.org.eclipse", "warn");
 
         Configuration configuration = ConfigurationImpl.load();
 
