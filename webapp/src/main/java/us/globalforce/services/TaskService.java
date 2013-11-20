@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import us.globalforce.model.Task;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -55,6 +56,8 @@ public class TaskService {
                 continue;
             }
 
+            task.input = mask(task.input);
+
             tasks.add(task);
             ids.add(task.id);
 
@@ -64,6 +67,25 @@ public class TaskService {
         }
 
         return tasks;
+    }
+
+    private String mask(String s) {
+        if (Strings.isNullOrEmpty(s)) {
+            return s;
+        }
+
+        // Replace any digits by #
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isDigit(c)) {
+                sb.append("#");
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
     }
 
 }
