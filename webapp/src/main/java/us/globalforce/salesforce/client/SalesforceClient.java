@@ -137,4 +137,34 @@ public class SalesforceClient {
         throw new IOException("Error creating item");
     }
 
+    public SObject find(String sfClass, String objectId) throws IOException {
+        URL url = new URL(baseUrl, "services/data/v29.0/sobjects/" + sfClass + "/" + objectId);
+
+        GetMethod get = new GetMethod(url.toString());
+
+        try {
+            get.setRequestHeader("Authorization", token.getHeader());
+
+            log.debug("Fetching object: {}", url);
+
+            httpclient.executeMethod(get);
+            if (get.getStatusCode() == HttpStatus.SC_OK) {
+                SObject result = new SObject(sfClass, parseJson(get));
+                return result;
+            } else {
+                log.info("Bad response running query: {}", get.getStatusLine());
+                throw new IOException("Unexpected status code");
+            }
+        } finally {
+            get.releaseConnection();
+        }
+    }
+
+    private JsonObject parseJson(GetMethod get) throws IOException {
+        JsonParser parser = new JsonParser();
+        JsonObject response = parser.parse(new InputStreamReader(get.getResponseBodyAsStream())).getAsJsonObject();
+
+        return response;
+    }
+
 }

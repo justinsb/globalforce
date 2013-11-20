@@ -32,6 +32,11 @@ public class SObject {
         this.sfClass = type;
     }
 
+    public SObject(String sfClass, JsonObject json) {
+        this.sfClass = sfClass;
+        this.json = json;
+    }
+
     public String getId() {
         return getString("Id");
     }

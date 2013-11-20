@@ -21,6 +21,7 @@ import us.globalforce.salesforce.client.StreamingClient;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 @Singleton
@@ -29,6 +30,7 @@ public class SalesforceHooks {
 
     final Map<String, SalesforceHook> hooks = Maps.newHashMap();
 
+    public static final String HOOK_CLASS = "Case";
     public static final String HOOK_KEY = "HookCases";
     public static final String HOOK_QUERY = "SELECT Id,Subject FROM Case";
 
@@ -37,6 +39,9 @@ public class SalesforceHooks {
 
     @Inject
     HttpClient httpClient;
+
+    @Inject
+    SalesforceUpdater salesforceUpdater;
 
     final Executor executor = Executors.newCachedThreadPool();
 
@@ -84,6 +89,23 @@ public class SalesforceHooks {
                 @Override
                 protected void onSalesforceMessage(Message message) {
                     log.info("Got salesforce message {}", message);
+
+                    Map<String, Object> data = (Map<String, Object>) message.get("data");
+                    if (data != null) {
+                        Map<String, Object> sobject = (Map<String, Object>) data.get("sobject");
+                        if (sobject != null) {
+                            String id = (String) data.get("Id");
+                            if (!Strings.isNullOrEmpty(id)) {
+                                salesforceUpdater.analyzeObject(credential, HOOK_CLASS, id);
+                            } else {
+                                log.info("No Id");
+                            }
+                        } else {
+                            log.info("No sobject");
+                        }
+                    } else {
+                        log.info("No data");
+                    }
                 }
             };
             if (listener.start()) {

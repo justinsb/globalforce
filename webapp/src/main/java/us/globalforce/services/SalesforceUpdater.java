@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.model.Credential;
+import us.globalforce.salesforce.client.SObject;
 import us.globalforce.salesforce.client.SalesforceClient;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
@@ -32,6 +33,9 @@ public class SalesforceUpdater {
     @Inject
     HttpClient httpClient;
 
+    @Inject
+    SentimentService sentimentService;
+
     public void updateSentiment(String organization, final String sfClass, final String objectId, final int sentiment) {
         final Credential credential = repository.findCredential(organization);
         if (credential == null) {
@@ -40,7 +44,6 @@ public class SalesforceUpdater {
         }
 
         executor.execute(new Runnable() {
-
             @Override
             public void run() {
                 try {
@@ -57,6 +60,29 @@ public class SalesforceUpdater {
                 }
             }
 
+        });
+    }
+
+    public void analyzeObject(final Credential credential, final String sfClass, final String objectId) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OAuthToken token = oauthClient.refreshToken(credential.refreshToken);
+
+                    SalesforceClient client = new SalesforceClient(httpClient, token);
+
+                    SObject o = client.find(sfClass, objectId);
+
+                    if (o == null) {
+                        log.warn("Unable to find object: {}", objectId);
+                    } else {
+                        sentimentService.findSentiment(credential.organization, o);
+                    }
+                } catch (Exception e) {
+                    log.error("Error updating salesforce", e);
+                }
+            }
         });
     }
 
