@@ -15,7 +15,7 @@ function setCurrentTask(task) {
 		$("#input").text("\"" + currentTask.input + "\"");
 		$.mobile.changePage( "#sentimentTask", { transition: "slideup", changeHash: false, allowSamePageTransition: true });
 	} else {
-		$.mobile.changePage( "#loading", { transition: "slideup", changeHash: false, allowSamePageTransition: true });
+		$.mobile.changePage( "#loading", { transition: "slideup", changeHash: false, allowSamePageTransition: false });
 	}
 }
 
