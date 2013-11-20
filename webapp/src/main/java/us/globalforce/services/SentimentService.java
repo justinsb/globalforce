@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import us.globalforce.model.Task;
 import us.globalforce.salesforce.client.SObject;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Singleton
@@ -35,18 +36,21 @@ public class SentimentService {
             log.error("Sentiment value set on: {}", o);
 
             String s = sentimentValue.toString();
-            if (s.equals("-2")) {
-                return Sentiment.STRONG_NEGATIVE;
-            } else if (s.equals("-1")) {
-                return Sentiment.NEGATIVE;
-            } else if (s.equals("0")) {
-                return Sentiment.NEUTRAL;
-            } else if (s.equals("1")) {
-                return Sentiment.POSITIVE;
-            } else if (s.equals("2")) {
-                return Sentiment.STRONG_POSITIVE;
-            } else {
-                throw new IllegalStateException();
+
+            if (!Strings.isNullOrEmpty(s)) {
+                if (s.equals("-2")) {
+                    return Sentiment.STRONG_NEGATIVE;
+                } else if (s.equals("-1")) {
+                    return Sentiment.NEGATIVE;
+                } else if (s.equals("0")) {
+                    return Sentiment.NEUTRAL;
+                } else if (s.equals("1")) {
+                    return Sentiment.POSITIVE;
+                } else if (s.equals("2")) {
+                    return Sentiment.STRONG_POSITIVE;
+                } else {
+                    throw new IllegalStateException();
+                }
             }
         }
 
