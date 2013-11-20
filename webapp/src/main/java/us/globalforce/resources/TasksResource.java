@@ -17,16 +17,21 @@ import us.globalforce.services.JdbcRepository;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.salesforce.client.oauth.OAuthToken;
 
 @Path("/api/tasks")
 public class TasksResource extends ResourceBase {
     @Inject
     JdbcRepository repository;
 
+    @Inject
+    OAuthToken oauthToken;
+
     @GET
     @Produces({ JSON })
     public List<Task> listOpenTasks() throws Exception {
-        return repository.listAllOpenTasks();
+        String organizationId = oauthToken.getOrganizationId();
+        return repository.listAllOpenTasks(organizationId);
     }
 
     @GET
@@ -34,6 +39,8 @@ public class TasksResource extends ResourceBase {
     @Produces({ JSON })
     public List<Task> assignTask(@QueryParam("n") @DefaultValue("5") int n, @QueryParam("veto") List<Long> veto)
             throws Exception {
+        String organizationId = oauthToken.getOrganizationId();
+
         List<Task> tasks = Lists.newArrayList();
 
         Set<Long> ids = Sets.newHashSet();
@@ -43,7 +50,7 @@ public class TasksResource extends ResourceBase {
         }
 
         for (int i = 0; i < n * 2; i++) {
-            Task task = repository.assignTask();
+            Task task = repository.assignTask(organizationId);
             if (task == null) {
                 continue;
             }
@@ -67,7 +74,9 @@ public class TasksResource extends ResourceBase {
     @Produces({ JSON })
     @Consumes({ JSON })
     public Task addTaskDecision(Task task) throws Exception {
+        task.worker = oauthToken.getUserId();
+        task.organization = oauthToken.getOrganizationId();
+
         return repository.addTaskDecision(task);
     }
-
 }

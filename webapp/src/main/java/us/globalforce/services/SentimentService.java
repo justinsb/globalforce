@@ -11,6 +11,7 @@ import us.globalforce.model.Task;
 
 import com.google.common.collect.Lists;
 import com.salesforce.client.SObject;
+import com.salesforce.client.oauth.OAuthToken;
 
 @Singleton
 public class SentimentService {
@@ -22,7 +23,12 @@ public class SentimentService {
     @Inject
     JdbcRepository repository;
 
+    @Inject
+    OAuthToken token;
+
     public Sentiment findSentiment(SObject o) {
+        String organizationId = token.getOrganizationId();
+
         Object sentimentValue = o.find(FIELD_SENTIMENT);
 
         if (sentimentValue != null) {
@@ -32,7 +38,7 @@ public class SentimentService {
 
         String objectId = o.getId();
 
-        List<Task> tasks = repository.listTasks(ProblemType.Sentiment, objectId);
+        List<Task> tasks = repository.listTasks(organizationId, ProblemType.Sentiment, objectId);
         if (tasks.isEmpty()) {
             List<String> sections = Lists.newArrayList();
 
@@ -47,7 +53,7 @@ public class SentimentService {
                 // Sentiment sentiment = analysis.getSentiments().get(i);
 
                 // TODO: Once we have more confidence in the model, only create tasks where we're not sure
-                repository.addTask(ProblemType.Sentiment, objectId, i, sentence);
+                repository.addTask(organizationId, ProblemType.Sentiment, objectId, i, sentence);
             }
         } else {
             Collections.sort(tasks, new Comparator<Task>() {

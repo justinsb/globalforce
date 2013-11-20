@@ -12,6 +12,9 @@ public class Task {
     public long id;
 
     @Column
+    public String organization;
+
+    @Column
     public String problem;
 
     @Column(name = "objectid")
@@ -24,7 +27,8 @@ public class Task {
     public String input;
 
     @Column
-    public Integer worker;
+    public String worker;
+
     @Column
     public String decision;
 }

@@ -1,6 +1,5 @@
 package us.globalforce.services;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 
@@ -11,7 +10,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.globalforce.model.HumanWorker;
 import us.globalforce.model.Task;
 
 import com.fathomdb.jdbc.JdbcConnection;
@@ -33,23 +31,23 @@ public class JdbcRepository {
     final Random random = new Random();
 
     static interface Queries {
-        @Query("SELECT * FROM human_worker")
-        List<HumanWorker> listHumanWorkers();
+        // @Query("SELECT * FROM human_worker")
+        // List<HumanWorker> listHumanWorkers();
 
-        @Query("SELECT * FROM task WHERE problem=? AND objectid=?")
-        List<Task> listTasks(String problem, String objectId);
+        @Query("SELECT * FROM task WHERE organization=? AND problem=? AND objectid=?")
+        List<Task> listTasks(String organization, String problem, String objectId);
 
-        @Query("SELECT * FROM task WHERE problem=? AND objectid=? AND sequence=?")
-        List<Task> listTasks(String problem, String objectId, int sequence);
+        @Query("SELECT * FROM task WHERE organization=? AND problem=? AND objectid=? AND sequence=?")
+        List<Task> listTasks(String organizaztion, String problem, String objectId, int sequence);
 
-        @Query("SELECT * FROM task WHERE worker is null")
-        List<Task> listAllOpenTasks();
+        @Query("SELECT * FROM task WHERE worker is null AND organization=?")
+        List<Task> listAllOpenTasks(String organizationId);
 
-        @Query("SELECT * FROM task WHERE worker is null and id < ? LIMIT 1")
-        List<Task> firstOpenTaskLT(long pivot);
+        @Query("SELECT * FROM task WHERE organization=? AND worker is null and id < ? LIMIT 1")
+        List<Task> firstOpenTaskLT(String organizationId, long pivot);
 
-        @Query("SELECT * FROM task WHERE worker is null and id > ? LIMIT 1")
-        List<Task> firstOpenTaskGT(long pivot);
+        @Query("SELECT * FROM task WHERE organization=? AND worker is null and id > ? LIMIT 1")
+        List<Task> firstOpenTaskGT(String organizationId, long pivot);
 
         @Query(Query.AUTOMATIC_INSERT)
         void insertTask(Task task);
@@ -58,22 +56,23 @@ public class JdbcRepository {
         void updateTask(Task task);
     }
 
+    // @JdbcTransaction
+    // public List<HumanWorker> listHumanWorkers() throws SQLException {
+    // Queries queries = queryFactory.get(Queries.class);
+    // return queries.listHumanWorkers();
+    // }
+
     @JdbcTransaction
-    public List<HumanWorker> listHumanWorkers() throws SQLException {
+    public List<Task> listTasks(String organizationId, ProblemType problem, String objectId) {
         Queries queries = queryFactory.get(Queries.class);
-        return queries.listHumanWorkers();
+        return queries.listTasks(organizationId, problem.getKey(), objectId);
     }
 
     @JdbcTransaction
-    public List<Task> listTasks(ProblemType problem, String objectId) {
-        Queries queries = queryFactory.get(Queries.class);
-        return queries.listTasks(problem.getKey(), objectId);
-    }
-
-    @JdbcTransaction
-    public long addTask(ProblemType problem, String objectId, int sequence, String sentence) {
+    public long addTask(String organizationId, ProblemType problem, String objectId, int sequence, String sentence) {
         Queries queries = queryFactory.get(Queries.class);
         Task task = new Task();
+        task.organization = organizationId;
         task.id = generateRandomInt64();
         task.problem = problem.getKey();
         task.objectId = objectId;
@@ -99,24 +98,24 @@ public class JdbcRepository {
     }
 
     @JdbcTransaction
-    public List<Task> listAllOpenTasks() {
+    public List<Task> listAllOpenTasks(String organizationId) {
         Queries queries = queryFactory.get(Queries.class);
-        return queries.listAllOpenTasks();
+        return queries.listAllOpenTasks(organizationId);
     }
 
     @JdbcTransaction
-    public Task assignTask() {
+    public Task assignTask(String organizationId) {
         Queries queries = queryFactory.get(Queries.class);
 
         long pivot = generateRandomInt64();
         List<Task> tasks;
 
-        tasks = queries.firstOpenTaskGT(pivot);
+        tasks = queries.firstOpenTaskGT(organizationId, pivot);
         if (!tasks.isEmpty()) {
             return Iterables.getFirst(tasks, null);
         }
 
-        tasks = queries.firstOpenTaskLT(pivot);
+        tasks = queries.firstOpenTaskLT(organizationId, pivot);
         if (!tasks.isEmpty()) {
             return Iterables.getFirst(tasks, null);
         }
@@ -128,7 +127,8 @@ public class JdbcRepository {
     public Task addTaskDecision(Task decision) {
         Queries queries = queryFactory.get(Queries.class);
 
-        List<Task> existing = queries.listTasks(decision.problem, decision.objectId, decision.sequence);
+        List<Task> existing = queries.listTasks(decision.organization, decision.problem, decision.objectId,
+                decision.sequence);
 
         if (existing.isEmpty()) {
             decision.id = generateRandomInt64();

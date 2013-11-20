@@ -11,7 +11,6 @@ import us.globalforce.resources.DemoREST;
 import us.globalforce.resources.OAuthResource;
 import us.globalforce.resources.PingResource;
 import us.globalforce.resources.TasksResource;
-import us.globalforce.resources.WorkersResource;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
@@ -44,7 +43,7 @@ public class GfGuiceServletModule extends JerseyServletModule {
 
         bind(AppRootResource.class);
         bind(PingResource.class);
-        bind(WorkersResource.class);
+        // bind(WorkersResource.class);
         bind(TasksResource.class);
 
         bind(OAuthResource.class);
