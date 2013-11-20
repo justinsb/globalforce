@@ -4,7 +4,7 @@ var queue = [];
 
 var loading = false;
 
-var history = [];
+var taskHistory = [];
 
 MIN_QUEUE_LENGTH = 5;
 MAX_HISTORY = 100;
@@ -50,13 +50,13 @@ function addToQueue(tasks) {
 	for (var i = 0; i < tasks.length; i++) {
 		var task = tasks[i];
 		
-		if (history.indexOf(task.id) != -1) {
+		if (taskHistory.indexOf(task.id) != -1) {
 			continue;
 		}
 		
-		history.push(task.id);
-		while (history.length() > MAX_HISTORY) {
-			history.shift()
+		taskHistory.push(task.id);
+		while (taskHistory.length() > MAX_HISTORY) {
+			taskHistory.shift()
 		}
 		
 		if (queue.length == 0 && currentTask === null) {
