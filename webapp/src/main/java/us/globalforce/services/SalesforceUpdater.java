@@ -27,7 +27,6 @@ public class SalesforceUpdater {
     @Inject
     JdbcRepository repository;
 
-    @Inject
     final ExecutorService executor = Executors.newFixedThreadPool(1);
 
     @Inject
