@@ -10,6 +10,7 @@ import org.platformlayer.metrics.NullMetricsModule;
 
 import us.globalforce.guice.GfGuiceModule;
 import us.globalforce.guice.GfGuiceServletModule;
+import us.globalforce.services.CredentialsService;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.config.ConfigurationImpl;
@@ -42,6 +43,9 @@ public class GlobalForceServer {
     MetricReporter metricReporter;
 
     private Server jettyServer;
+
+    @Inject
+    CredentialsService credentials;
 
     public static void main(String[] args) throws Exception {
         // LogbackHook.attachToRootLogger();
@@ -90,6 +94,8 @@ public class GlobalForceServer {
         this.jettyServer = serverBuilder.start();
 
         metricReporter.start();
+
+        credentials.start();
 
         // if (configuration.lookup("crawler.enabled", true)) {
         // jobScheduler.start();

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import us.globalforce.salesforce.client.oauth.OAuthToken;
 
-public class StreamingClient {
+public abstract class StreamingClient {
 
     private static final Logger log = LoggerFactory.getLogger(StreamingClient.class);
 
@@ -41,7 +41,9 @@ public class StreamingClient {
         this.channel = "/topic/" + key;
     }
 
-    public void start() throws IOException {
+    public abstract void onFailure();
+
+    public boolean start() throws IOException {
         log.info("Running streaming client....");
 
         final BayeuxClient client = makeClient(token);
@@ -58,6 +60,7 @@ public class StreamingClient {
                     if (error != null) {
                         log.warn("Error during HANDSHAKE: " + error);
                         log.warn("Exiting...");
+                        onFailure();
                         return;
                     }
 
@@ -65,6 +68,7 @@ public class StreamingClient {
                     if (e != null) {
                         log.warn("Exception during HANDSHAKE", e);
                         log.warn("Exiting...");
+                        onFailure();
                         return;
                     }
                 }
@@ -84,6 +88,7 @@ public class StreamingClient {
                     if (error != null) {
                         log.warn("Error during CONNECT: " + error);
                         log.warn("Exiting...");
+                        onFailure();
                         return;
                     }
                 }
@@ -103,6 +108,7 @@ public class StreamingClient {
                     if (error != null) {
                         log.warn("Error during SUBSCRIBE: " + error);
                         log.warn("Exiting...");
+                        onFailure();
                         return;
                     }
                 }
@@ -115,7 +121,7 @@ public class StreamingClient {
         boolean handshaken = client.waitFor(10 * 1000, BayeuxClient.State.CONNECTED);
         if (!handshaken) {
             log.warn("Failed to handshake: " + client);
-            return;
+            return false;
         }
 
         log.debug("Subscribing for channel: " + channel);
@@ -124,9 +130,14 @@ public class StreamingClient {
             @Override
             public void onMessage(ClientSessionChannel channel, Message message) {
                 log.info("Received Message: " + message);
+                onSalesforceMessage(message);
             }
         });
+
+        return true;
     }
+
+    protected abstract void onSalesforceMessage(Message message);
 
     private static BayeuxClient makeClient(final OAuthToken token) throws IOException {
         HttpClient httpClient = new HttpClient();

@@ -2,11 +2,14 @@ package us.globalforce.services;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.cometd.bayeux.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,8 @@ public class SalesforceHooks {
     @Inject
     HttpClient httpClient;
 
+    final Executor executor = Executors.newCachedThreadPool();
+
     public class SalesforceHook {
         final Credential credential;
 
@@ -56,9 +61,32 @@ public class SalesforceHooks {
                 PushTopic.create(client, HOOK_KEY, HOOK_QUERY, true, false);
             }
 
-            StreamingClient listener = new StreamingClient(token, HOOK_KEY);
-            listener.start();
-            this.listener = listener;
+            StreamingClient listener = new StreamingClient(token, HOOK_KEY) {
+                @Override
+                public void onFailure() {
+                    synchronized (this) {
+                        SalesforceHook.this.listener = null;
+                    }
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                start();
+                            } catch (Exception e) {
+                                log.error("Error trying to restart streaming listener", e);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                protected void onSalesforceMessage(Message message) {
+                    log.info("Got salesforce message {}", message);
+                }
+            };
+            if (listener.start()) {
+                this.listener = listener;
+            }
         }
     }
 
