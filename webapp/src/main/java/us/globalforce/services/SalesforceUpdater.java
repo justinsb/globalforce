@@ -77,8 +77,7 @@ public class SalesforceUpdater {
 
                     SalesforceClient client = new SalesforceClient(httpClient, token);
 
-                    String soql = "SELECT Id FROM " + sfClass + " WHERE Sentiment__c = null";
-
+                    String soql = "SELECT Id FROM " + sfClass + " WHERE Sentiment__c = null OR Sentiment__c=''";
                     SObjectList list = client.runQuery(soql);
 
                     for (SObject i : list) {
