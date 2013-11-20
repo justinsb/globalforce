@@ -51,8 +51,52 @@
         </div><!-- /header -->
  
         <div data-role="content">
-<div>
-<h2 id="input" style="color: white; text-align: center; height: 60px"></h2>
+        
+        <style>
+.bubble 
+{
+position: relative;
+width: 520px;
+height: 120px;
+padding: 0px;
+background: #FFFFFF;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+border: #7F7F7F solid 8px;
+}
+
+.bubble:after 
+{
+content: '';
+position: absolute;
+border-style: solid;
+border-width: 15px 15px 15px 0;
+border-color: transparent #FFFFFF;
+display: block;
+width: 0;
+z-index: 1;
+left: -15px;
+top: 24px;
+}
+
+.bubble:before 
+{
+content: '';
+position: absolute;
+border-style: solid;
+border-width: 22px 22px 22px 0;
+border-color: transparent #7F7F7F;
+display: block;
+width: 0;
+z-index: 0;
+left: -30px;
+top: 17px;
+}
+</style>
+        
+<div class="bubble">
+<h2 id="input" style="color: black; text-align: center"></h2>
 </div>
 
 
