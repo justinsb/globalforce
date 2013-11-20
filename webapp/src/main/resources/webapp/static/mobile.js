@@ -50,6 +50,9 @@ function addToQueue(tasks) {
 			setCurrentTask(task);
 		} else {
 			var found = false;
+			if (currentTask != null && currentTask.id == task.id) {
+				found = true;
+			}
 			for (var j = 0; j < queue.length; j++) {
 				if (queue[j].id == task.id) {
 					found = true;
