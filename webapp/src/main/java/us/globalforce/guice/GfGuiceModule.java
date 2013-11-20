@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.model.Task;
+import us.globalforce.salesforce.client.oauth.OAuthClient;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.jpa.impl.ResultSetMappers;
@@ -21,7 +22,6 @@ import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.util.Providers;
 import com.jolbox.bonecp.BoneCPDataSource;
-import com.salesforce.client.oauth.OAuthClient;
 
 public class GfGuiceModule extends AbstractModule {
     private static final Logger log = LoggerFactory.getLogger(GfGuiceModule.class);

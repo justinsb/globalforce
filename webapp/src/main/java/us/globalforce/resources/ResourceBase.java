@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import com.salesforce.client.oauth.OAuthToken;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
 
 public class ResourceBase {
     public static final String JSON = javax.ws.rs.core.MediaType.APPLICATION_JSON;

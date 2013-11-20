@@ -8,9 +8,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import us.globalforce.model.Task;
+import us.globalforce.salesforce.client.SObject;
 
 import com.google.common.collect.Lists;
-import com.salesforce.client.SObject;
 
 @Singleton
 public class SentimentService {

@@ -23,6 +23,10 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.globalforce.salesforce.client.SObject;
+import us.globalforce.salesforce.client.SObjectList;
+import us.globalforce.salesforce.client.SalesforceClient;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
 import us.globalforce.services.Sentiment;
 import us.globalforce.services.SentimentService;
 
@@ -30,10 +34,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.salesforce.client.SObject;
-import com.salesforce.client.SObjectList;
-import com.salesforce.client.SalesforceClient;
-import com.salesforce.client.oauth.OAuthToken;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
 @Singleton

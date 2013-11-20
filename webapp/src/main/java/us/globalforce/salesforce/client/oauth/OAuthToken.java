@@ -1,4 +1,4 @@
-package com.salesforce.client.oauth;
+package us.globalforce.salesforce.client.oauth;
 
 import java.io.IOException;
 import java.io.Serializable;

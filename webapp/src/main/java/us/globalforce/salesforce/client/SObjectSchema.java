@@ -1,4 +1,4 @@
-package com.salesforce.client;
+package us.globalforce.salesforce.client;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

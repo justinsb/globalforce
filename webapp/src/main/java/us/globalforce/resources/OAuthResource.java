@@ -11,9 +11,10 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.globalforce.salesforce.client.oauth.OAuthClient;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
+
 import com.google.common.base.Strings;
-import com.salesforce.client.oauth.OAuthClient;
-import com.salesforce.client.oauth.OAuthToken;
 
 @Path("/oauth")
 public class OAuthResource {

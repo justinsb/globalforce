@@ -1,4 +1,4 @@
-package com.salesforce.client;
+package us.globalforce.salesforce.client;
 
 import com.google.gson.JsonObject;
 

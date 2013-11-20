@@ -11,8 +11,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.salesforce.client.oauth.OAuthClient;
-import com.salesforce.client.oauth.OAuthToken;
+import us.globalforce.salesforce.client.oauth.OAuthClient;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
 
 @Path("/")
 public class AppRootResource {

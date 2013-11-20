@@ -1,4 +1,4 @@
-package com.salesforce.client;
+package us.globalforce.salesforce.client;
 
 import java.io.IOException;
 import java.net.URL;
@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.salesforce.client.oauth.OAuthToken;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
 
 public class SalesforceClient {
     private static final Logger log = LoggerFactory.getLogger(SalesforceClient.class);

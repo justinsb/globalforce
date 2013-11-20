@@ -13,11 +13,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import us.globalforce.model.Task;
+import us.globalforce.salesforce.client.oauth.OAuthToken;
 import us.globalforce.services.JdbcRepository;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.salesforce.client.oauth.OAuthToken;
 
 @Path("/api/tasks")
 public class TasksResource extends ResourceBase {
