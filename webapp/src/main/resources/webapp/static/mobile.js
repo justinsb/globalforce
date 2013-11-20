@@ -78,6 +78,11 @@ function addToQueue(tasks) {
 		}
 	}
 	
+	// For app launch
+	if (queue.length == 0 && currentTask == null) {
+		setCurrentTask(null);
+	}
+	
 	if (queue.length <= MIN_QUEUE_LENGTH) {
 		window.setTimeout(function() {
      		reloadQueue();
