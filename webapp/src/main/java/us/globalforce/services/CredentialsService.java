@@ -24,7 +24,11 @@ public class CredentialsService {
     public void insertCredential(Credential credential) throws IOException {
         repository.insertCredential(credential);
 
-        salesforceHooks.ensureHooked(credential);
+        try {
+            salesforceHooks.ensureHooked(credential);
+        } catch (Exception e) {
+            log.error("Error while hooking organization", e);
+        }
     }
 
     public void start() {

@@ -64,6 +64,8 @@ public class SalesforceHooks {
             StreamingClient listener = new StreamingClient(token, HOOK_KEY) {
                 @Override
                 public void onFailure() {
+                    log.warn("Got failure event from listener");
+
                     synchronized (this) {
                         SalesforceHook.this.listener = null;
                     }
@@ -86,6 +88,8 @@ public class SalesforceHooks {
             };
             if (listener.start()) {
                 this.listener = listener;
+            } else {
+                log.warn("Listener failed to start");
             }
         }
     }
