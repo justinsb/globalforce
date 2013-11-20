@@ -84,7 +84,7 @@ public class SalesforceClient {
     }
 
     public void update(String sfClass, String objectId, JsonObject update) throws IOException {
-        URL url = new URL(baseUrl, "services/data/v20.0/sobjects/" + sfClass + "/" + objectId);
+        URL url = new URL(baseUrl, "services/data/v29.0/sobjects/" + sfClass + "/" + objectId);
 
         PostMethod patch = new PostMethod(url.toString()) {
             @Override
@@ -105,7 +105,7 @@ public class SalesforceClient {
     }
 
     public String create(String sfClass, JsonObject json) throws IOException {
-        URL url = new URL(baseUrl, "services/data/v20.0/sobjects/" + sfClass + "/");
+        URL url = new URL(baseUrl, "services/data/v29.0/sobjects/" + sfClass + "/");
 
         PostMethod post = new PostMethod(url.toString());
         post.setRequestHeader("Authorization", token.getHeader());
