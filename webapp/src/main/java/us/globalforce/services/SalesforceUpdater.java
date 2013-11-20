@@ -85,6 +85,8 @@ public class SalesforceUpdater {
                         String objectId = i.getId();
                         SObject o = client.find(sfClass, objectId);
 
+                        log.info("Catch-up on case: {}", objectId);
+
                         if (o == null) {
                             log.warn("Unable to find object: {}", objectId);
                         } else {
