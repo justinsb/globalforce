@@ -32,8 +32,12 @@ public class OAuthToken implements Serializable {
         URL u = new URL(idUrl);
         String path = u.getPath();
         List<String> tokens = Splitter.on('/').omitEmptyStrings().splitToList(path);
-        this.organizationId = tokens.get(0);
-        this.userId = tokens.get(1);
+        if (tokens.get(0).equals("id")) {
+            this.organizationId = tokens.get(1);
+            this.userId = tokens.get(2);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public String getAccessToken() {

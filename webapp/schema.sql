@@ -1,4 +1,4 @@
-create table human_worker (id serial primary key, login varchar, name varchar);
+--create table human_worker (id serial primary key, login varchar, name varchar);
 
 create table task (id bigint primary key, organization varchar, problem varchar, objectid varchar, sequence int, input varchar, worker varchar, decision varchar);
 
