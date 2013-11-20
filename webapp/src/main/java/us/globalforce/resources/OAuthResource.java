@@ -46,7 +46,7 @@ public class OAuthResource {
 
             // TODO: We could just set the token direct into the session!
 
-            token.set(request);
+            token.storeInSession(request);
 
             // // Set a session attribute so that other servlets can get the access
             // // token

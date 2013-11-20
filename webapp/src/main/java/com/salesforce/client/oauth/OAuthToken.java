@@ -30,7 +30,7 @@ public class OAuthToken implements Serializable {
         return accessToken;
     }
 
-    public void set(HttpServletRequest request) {
+    public void storeInSession(HttpServletRequest request) {
         request.getSession().setAttribute(OAuthToken.class.getName(), this);
     }
 
