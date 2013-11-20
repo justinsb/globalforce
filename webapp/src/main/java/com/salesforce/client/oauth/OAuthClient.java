@@ -20,7 +20,7 @@ public class OAuthClient {
 
     private final String clientId = "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d";
     private final String clientSecret = "295020390184049994";
-    private final String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth/_callback";
+    private final String redirectUri = "https://pacific-gorge-1278.herokuapp.com/oauth";
     private final String environment = "https://login.salesforce.com";
     private final HttpClient httpClient;
 

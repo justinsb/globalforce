@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.salesforce.client.oauth.OAuthClient;
 import com.salesforce.client.oauth.OAuthToken;
 
@@ -20,7 +21,7 @@ import com.salesforce.client.oauth.OAuthToken;
  * Servlet parameters
  */
 @Singleton
-@WebServlet(name = "oauth", urlPatterns = { "/oauth/*", "/oauth" }, initParams = {
+@WebServlet(name = "oauth", urlPatterns = { "/oauth" }, initParams = {
 // // clientId is 'Consumer Key' in the Remote Access UI
 // @WebInitParam(name = "clientId", value =
 // "3MVG9A2kN3Bn17ht1Sa_5M8pmOHZuFU98yx.VxDUG7qkW9pqUk7c9tX57iXvSAB1k9VSbECGOaB79S_Agel0d"),
@@ -36,20 +37,21 @@ public class OAuthServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-    private static final String INSTANCE_URL = "INSTANCE_URL";
+    // private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    // private static final String INSTANCE_URL = "INSTANCE_URL";
 
     @Inject
     OAuthClient oauthClient;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String accessToken = (String) request.getSession().getAttribute(ACCESS_TOKEN);
+        OAuthToken authToken = OAuthToken.find(request);
+        // (String) request.getSession().getAttribute(ACCESS_TOKEN);
 
-        if (accessToken == null) {
-            // TODO: Just use /oauth; check for presence of code request parameter
-            // (Then we can easily make this a resource, as well!)
-            if (request.getRequestURI().endsWith("oauth")) {
+        if (authToken == null) {
+            String code = request.getParameter("code");
+
+            if (Strings.isNullOrEmpty(code)) {
                 // we need to send the user to authorize
                 response.sendRedirect(oauthClient.getAuthUrl().toString());
                 return;
@@ -57,20 +59,21 @@ public class OAuthServlet extends HttpServlet {
 
             log.info("Auth successful - got callback");
 
-            String code = request.getParameter("code");
             OAuthToken token = oauthClient.validate(code);
 
             // TODO: We could just set the token direct into the session!
 
-            // Set a session attribute so that other servlets can get the access
-            // token
-            request.getSession().setAttribute(ACCESS_TOKEN, token.getAccessToken());
+            token.set(request);
 
-            // We also get the instance URL from the OAuth response, so set it
-            // in the session too
-            request.getSession().setAttribute(INSTANCE_URL, token.getInstanceUrl());
+            // // Set a session attribute so that other servlets can get the access
+            // // token
+            // request.getSession().setAttribute(ACCESS_TOKEN, token.getAccessToken());
+            //
+            // // We also get the instance URL from the OAuth response, so set it
+            // // in the session too
+            // request.getSession().setAttribute(INSTANCE_URL, token.getInstanceUrl());
         }
 
-        response.sendRedirect(request.getContextPath() + "/DemoREST");
+        response.sendRedirect(request.getContextPath() + "/static/mobile.html");
     }
 }

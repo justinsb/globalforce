@@ -1,8 +1,13 @@
 package com.salesforce.client.oauth;
 
+import java.io.Serializable;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gson.JsonObject;
 
-public class OAuthToken {
+public class OAuthToken implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final String accessToken;
     private final String instanceUrl;
@@ -18,6 +23,15 @@ public class OAuthToken {
 
     public String getInstanceUrl() {
         return instanceUrl;
+    }
+
+    public static OAuthToken find(HttpServletRequest request) {
+        OAuthToken accessToken = (OAuthToken) request.getSession().getAttribute(OAuthToken.class.getName());
+        return accessToken;
+    }
+
+    public void set(HttpServletRequest request) {
+        request.getSession().setAttribute(OAuthToken.class.getName(), this);
     }
 
 }

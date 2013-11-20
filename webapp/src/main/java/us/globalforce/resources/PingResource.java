@@ -4,7 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("/api/ping")
-public class RootResource {
+public class PingResource {
     @GET
     public String ping() {
         return "pong";

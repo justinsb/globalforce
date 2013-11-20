@@ -6,9 +6,10 @@ import java.util.Map;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
+import us.globalforce.resources.AppRootResource;
 import us.globalforce.resources.DemoREST;
 import us.globalforce.resources.OAuthServlet;
-import us.globalforce.resources.RootResource;
+import us.globalforce.resources.PingResource;
 import us.globalforce.resources.TasksResource;
 import us.globalforce.resources.WorkersResource;
 
@@ -41,7 +42,8 @@ public class GfGuiceServletModule extends JerseyServletModule {
 
         // filter("/*").through(PersistFilter.class);
 
-        bind(RootResource.class);
+        bind(AppRootResource.class);
+        bind(PingResource.class);
         bind(WorkersResource.class);
         bind(TasksResource.class);
 
