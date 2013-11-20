@@ -32,7 +32,22 @@ public class SentimentService {
 
         if (sentimentValue != null) {
             // TODO: Store the value in Salesforce and retrieve it!
-            throw new UnsupportedOperationException();
+            log.error("Sentiment value set on: {}", o);
+
+            String s = sentimentValue.toString();
+            if (s.equals("-2")) {
+                return Sentiment.STRONG_NEGATIVE;
+            } else if (s.equals("-1")) {
+                return Sentiment.NEGATIVE;
+            } else if (s.equals("0")) {
+                return Sentiment.NEUTRAL;
+            } else if (s.equals("1")) {
+                return Sentiment.POSITIVE;
+            } else if (s.equals("2")) {
+                return Sentiment.STRONG_POSITIVE;
+            } else {
+                throw new IllegalStateException();
+            }
         }
 
         String objectId = o.getId();
