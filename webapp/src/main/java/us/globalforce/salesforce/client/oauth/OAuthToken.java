@@ -30,7 +30,7 @@ public class OAuthToken implements Serializable {
     public OAuthToken(JsonObject authResponse) throws IOException {
         accessToken = authResponse.get("access_token").getAsString();
         instanceUrl = authResponse.get("instance_url").getAsString();
-        refreshToken = authResponse.get("refresh_token").getAsString();
+        refreshToken = findString(authResponse, "refresh_token");
         idUrl = authResponse.get("id").getAsString();
 
         URL u = new URL(idUrl);
@@ -42,6 +42,14 @@ public class OAuthToken implements Serializable {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private String findString(JsonObject json, String property) {
+        JsonElement jsonElement = json.get(property);
+        if (jsonElement == null) {
+            return null;
+        }
+        return jsonElement.getAsString();
     }
 
     public String getRefreshToken() {

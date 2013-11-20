@@ -69,10 +69,17 @@ public class OAuthResource {
     }
 
     private void saveCredential(OAuthToken token) {
+        String refreshToken = token.getRefreshToken();
+
+        if (Strings.isNullOrEmpty(refreshToken)) {
+            log.warn("No refresh token: {}", token);
+            return;
+        }
+
         Credential credential = new Credential();
         credential.organization = token.getOrganizationId();
         credential.userId = token.getUserId();
-        credential.refreshToken = token.getRefreshToken();
+        credential.refreshToken = refreshToken;
 
         repository.insertCredential(credential);
     }
