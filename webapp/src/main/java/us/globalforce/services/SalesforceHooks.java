@@ -94,7 +94,7 @@ public class SalesforceHooks {
                     if (data != null) {
                         Map<String, Object> sobject = (Map<String, Object>) data.get("sobject");
                         if (sobject != null) {
-                            String id = (String) data.get("Id");
+                            String id = (String) sobject.get("Id");
                             if (!Strings.isNullOrEmpty(id)) {
                                 salesforceUpdater.analyzeObject(credential, HOOK_CLASS, id);
                             } else {
