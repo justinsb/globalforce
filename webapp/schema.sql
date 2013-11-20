@@ -5,3 +5,7 @@ create table task (id bigint primary key, organization varchar, problem varchar,
 create index task_lookup ON task (organization, problem, objectid, sequence);
 
 create index task_queue ON task (organization, id, problem) WHERE worker IS NULL;
+
+create table credential (id bigint primary key, organization varchar, userid varchar, created bigint, refreshtoken varchar);
+
+create index credential_lookup ON credential (organization, created);

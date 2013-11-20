@@ -24,13 +24,13 @@ public class TasksResource extends ResourceBase {
     @Inject
     JdbcRepository repository;
 
-    @GET
-    @Produces({ JSON })
-    public List<Task> listOpenTasks() throws Exception {
-        OAuthToken oauthToken = getAuthToken();
-        String organizationId = oauthToken.getOrganizationId();
-        return repository.listAllOpenTasks(organizationId);
-    }
+    // @GET
+    // @Produces({ JSON })
+    // public List<Task> listOpenTasks() throws Exception {
+    // OAuthToken oauthToken = getAuthToken();
+    // String organizationId = oauthToken.getOrganizationId();
+    // return repository.listAllOpenTasks(organizationId);
+    // }
 
     @GET
     @Path("assign")

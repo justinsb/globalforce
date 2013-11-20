@@ -17,18 +17,9 @@ public class Credential {
     @Column(name = "userid")
     public String userId;
 
-    @Column(name = "objectid")
-    public String objectId;
+    @Column(name = "refreshtoken")
+    public String refreshToken;
 
-    @Column
-    public int sequence;
-
-    @Column
-    public String input;
-
-    @Column
-    public String worker;
-
-    @Column
-    public String decision;
+    @Column(name = "created")
+    public long createdAt;
 }

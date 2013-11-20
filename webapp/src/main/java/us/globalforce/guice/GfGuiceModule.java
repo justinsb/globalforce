@@ -10,6 +10,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.globalforce.model.Credential;
 import us.globalforce.model.Task;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 
@@ -43,7 +44,7 @@ public class GfGuiceModule extends AbstractModule {
 
         bind(ResultSetMappers.class).toProvider(Providers.guicify(ResultSetMappersProvider.build(
         // /HumanWorker.class,
-                Task.class)));
+                Task.class, Credential.class)));
 
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.setMaxConnectionsPerHost(10);

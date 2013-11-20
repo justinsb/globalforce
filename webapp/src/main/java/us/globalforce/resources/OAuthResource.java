@@ -11,8 +11,10 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.globalforce.model.Credential;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
+import us.globalforce.services.JdbcRepository;
 
 import com.google.common.base.Strings;
 
@@ -21,6 +23,9 @@ public class OAuthResource {
     private static final Logger log = LoggerFactory.getLogger(OAuthResource.class);
 
     private static final long serialVersionUID = 1L;
+
+    @Inject
+    JdbcRepository repository;
 
     @Inject
     OAuthClient oauthClient;
@@ -49,6 +54,8 @@ public class OAuthResource {
 
             token.storeInSession(request);
 
+            saveCredential(token);
+
             // // Set a session attribute so that other servlets can get the access
             // // token
             // request.getSession().setAttribute(ACCESS_TOKEN, token.getAccessToken());
@@ -59,5 +66,14 @@ public class OAuthResource {
         }
 
         return Response.temporaryRedirect(URI.create(request.getContextPath() + "/static/mobile.html")).build();
+    }
+
+    private void saveCredential(OAuthToken token) {
+        Credential credential = new Credential();
+        credential.organization = token.getOrganizationId();
+        credential.userId = token.getUserId();
+        credential.refreshToken = token.getRefreshToken();
+
+        repository.insertCredential(credential);
     }
 }

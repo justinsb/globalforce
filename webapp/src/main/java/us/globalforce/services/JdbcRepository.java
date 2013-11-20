@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.globalforce.model.Credential;
 import us.globalforce.model.Task;
 
 import com.fathomdb.jdbc.JdbcConnection;
@@ -54,6 +55,12 @@ public class JdbcRepository {
 
         @Query(Query.AUTOMATIC_UPDATE)
         void updateTask(Task task);
+
+        @Query(Query.AUTOMATIC_INSERT)
+        void insert(Credential credential);
+
+        @Query("SELECT * FROM credential WHERE organization=? ORDER BY created DESC LIMIT 1")
+        List<Credential> findNewestCredentials(String organization);
     }
 
     // @JdbcTransaction
@@ -81,6 +88,26 @@ public class JdbcRepository {
         queries.insertTask(task);
 
         return task.id;
+    }
+
+    @JdbcTransaction
+    public Credential insertCredential(Credential credential) {
+        Queries queries = queryFactory.get(Queries.class);
+        credential.createdAt = System.currentTimeMillis() / 1000L;
+        credential.id = generateRandomInt64();
+        queries.insert(credential);
+
+        return credential;
+    }
+
+    @JdbcTransaction
+    public Credential findCredential(String organization) {
+        Queries queries = queryFactory.get(Queries.class);
+        List<Credential> credentials = queries.findNewestCredentials(organization);
+        if (credentials.isEmpty()) {
+            return null;
+        }
+        return credentials.get(0);
     }
 
     private long generateRandomInt64() {
@@ -157,4 +184,5 @@ public class JdbcRepository {
 
         return decision;
     }
+
 }
