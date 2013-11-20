@@ -11,7 +11,6 @@ import us.globalforce.model.Task;
 
 import com.google.common.collect.Lists;
 import com.salesforce.client.SObject;
-import com.salesforce.client.oauth.OAuthToken;
 
 @Singleton
 public class SentimentService {
@@ -23,12 +22,7 @@ public class SentimentService {
     @Inject
     JdbcRepository repository;
 
-    @Inject
-    OAuthToken token;
-
-    public Sentiment findSentiment(SObject o) {
-        String organizationId = token.getOrganizationId();
-
+    public Sentiment findSentiment(String organizationId, SObject o) {
         Object sentimentValue = o.find(FIELD_SENTIMENT);
 
         if (sentimentValue != null) {

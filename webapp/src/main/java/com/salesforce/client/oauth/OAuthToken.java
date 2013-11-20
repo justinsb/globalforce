@@ -20,6 +20,10 @@ public class OAuthToken implements Serializable {
     private final String organizationId;
     private final String userId;
 
+    public String getHeader() {
+        return "OAuth " + accessToken;
+    }
+
     public OAuthToken(JsonObject authResponse) throws IOException {
         accessToken = authResponse.get("access_token").getAsString();
         instanceUrl = authResponse.get("instance_url").getAsString();
@@ -59,6 +63,12 @@ public class OAuthToken implements Serializable {
 
     public String getUserId() {
         return userId;
+    }
+
+    @Override
+    public String toString() {
+        return "OAuthToken [accessToken=" + accessToken + ", instanceUrl=" + instanceUrl + ", idUrl=" + idUrl
+                + ", organizationId=" + organizationId + ", userId=" + userId + "]";
     }
 
 }

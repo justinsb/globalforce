@@ -16,7 +16,6 @@ import com.salesforce.client.oauth.OAuthToken;
 
 @Path("/")
 public class AppRootResource {
-
     private static final Logger log = LoggerFactory.getLogger(AppRootResource.class);
 
     @Inject
@@ -26,7 +25,7 @@ public class AppRootResource {
     OAuthClient oauthClient;
 
     @GET
-    public Response ping() throws Exception {
+    public Response getRoot() throws Exception {
         OAuthToken token = OAuthToken.find(request);
 
         if (token == null) {

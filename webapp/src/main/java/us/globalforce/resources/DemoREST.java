@@ -30,10 +30,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.salesforce.client.AuthToken;
 import com.salesforce.client.SObject;
 import com.salesforce.client.SObjectList;
 import com.salesforce.client.SalesforceClient;
+import com.salesforce.client.oauth.OAuthToken;
 
 @WebServlet(urlPatterns = { "/DemoREST" })
 @Singleton
@@ -41,8 +41,8 @@ public class DemoREST extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(DemoREST.class);
 
     private static final long serialVersionUID = 1L;
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-    private static final String INSTANCE_URL = "INSTANCE_URL";
+    // private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    // private static final String INSTANCE_URL = "INSTANCE_URL";
 
     static final Gson gson = new Gson();
 
@@ -53,6 +53,7 @@ public class DemoREST extends HttpServlet {
     SentimentService sentimentService;
 
     private void showAccounts(SalesforceClient client, PrintWriter writer) throws ServletException, IOException {
+        String organizationId = client.getAuthToken().getOrganizationId();
 
         SObjectList results = client.runQuery("SELECT Id,Subject,Description from Case LIMIT 100");
 
@@ -73,7 +74,7 @@ public class DemoREST extends HttpServlet {
             }
             writer.write("</table>");
 
-            Sentiment sentiment = sentimentService.findSentiment(o);
+            Sentiment sentiment = sentimentService.findSentiment(organizationId, o);
             if (sentiment == null) {
                 writer.write("No sentiment (yet)");
             } else {
@@ -205,20 +206,21 @@ public class DemoREST extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
 
-        String accessToken = (String) request.getSession().getAttribute(ACCESS_TOKEN);
+        OAuthToken token = OAuthToken.find(request);
+        // String accessToken = (String) request.getSession().getAttribute(ACCESS_TOKEN);
+        //
+        // String instanceUrl = (String) request.getSession().getAttribute(INSTANCE_URL);
 
-        String instanceUrl = (String) request.getSession().getAttribute(INSTANCE_URL);
-
-        if (accessToken == null) {
+        if (token == null) {
             log.info("No access token; redirecting");
             response.sendRedirect(request.getContextPath() + "/oauth");
             return;
         }
 
-        log.info("We have an access token: " + accessToken + "\n" + "Using instance " + instanceUrl + "\n\n");
+        log.info("We have an access token: " + token);
 
-        URL url = new URL(instanceUrl);
-        SalesforceClient client = new SalesforceClient(httpClient, url, new AuthToken(accessToken));
+        URL url = new URL(token.getInstanceUrl());
+        SalesforceClient client = new SalesforceClient(httpClient, url, token);
 
         showAccounts(client, writer);
 

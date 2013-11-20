@@ -24,12 +24,10 @@ public class TasksResource extends ResourceBase {
     @Inject
     JdbcRepository repository;
 
-    @Inject
-    OAuthToken oauthToken;
-
     @GET
     @Produces({ JSON })
     public List<Task> listOpenTasks() throws Exception {
+        OAuthToken oauthToken = getAuthToken();
         String organizationId = oauthToken.getOrganizationId();
         return repository.listAllOpenTasks(organizationId);
     }
@@ -39,6 +37,7 @@ public class TasksResource extends ResourceBase {
     @Produces({ JSON })
     public List<Task> assignTask(@QueryParam("n") @DefaultValue("5") int n, @QueryParam("veto") List<Long> veto)
             throws Exception {
+        OAuthToken oauthToken = getAuthToken();
         String organizationId = oauthToken.getOrganizationId();
 
         List<Task> tasks = Lists.newArrayList();
@@ -74,6 +73,8 @@ public class TasksResource extends ResourceBase {
     @Produces({ JSON })
     @Consumes({ JSON })
     public Task addTaskDecision(Task task) throws Exception {
+        OAuthToken oauthToken = getAuthToken();
+
         task.worker = oauthToken.getUserId();
         task.organization = oauthToken.getOrganizationId();
 

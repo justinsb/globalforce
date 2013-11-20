@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.model.Task;
-import us.globalforce.resources.OAuthTokenProvider;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.jpa.impl.ResultSetMappers;
@@ -23,7 +22,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.util.Providers;
 import com.jolbox.bonecp.BoneCPDataSource;
 import com.salesforce.client.oauth.OAuthClient;
-import com.salesforce.client.oauth.OAuthToken;
 
 public class GfGuiceModule extends AbstractModule {
     private static final Logger log = LoggerFactory.getLogger(GfGuiceModule.class);
@@ -42,8 +40,6 @@ public class GfGuiceModule extends AbstractModule {
 
         DataSource ds = buildDataSource();
         bind(DataSource.class).toInstance(ds);
-
-        bind(OAuthToken.class).toProvider(OAuthTokenProvider.class);
 
         bind(ResultSetMappers.class).toProvider(Providers.guicify(ResultSetMappersProvider.build(
         // /HumanWorker.class,

@@ -10,15 +10,17 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.salesforce.client.oauth.OAuthToken;
+
 public class SalesforceClient {
     private static final Logger log = LoggerFactory.getLogger(SalesforceClient.class);
 
     final HttpClient httpclient;
     final URL baseUrl;
 
-    final AuthToken token;
+    final OAuthToken token;
 
-    public SalesforceClient(HttpClient httpclient, URL baseUrl, AuthToken token) {
+    public SalesforceClient(HttpClient httpclient, URL baseUrl, OAuthToken token) {
         super();
         this.httpclient = httpclient;
         this.baseUrl = baseUrl;
@@ -69,5 +71,9 @@ public class SalesforceClient {
         } finally {
             get.releaseConnection();
         }
+    }
+
+    public OAuthToken getAuthToken() {
+        return this.token;
     }
 }
