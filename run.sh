@@ -14,4 +14,7 @@ ls models/
 CLASSPATH_PREFIX="models/stanford-corenlp-3.3.0-models.jar"
 export CLASSPATH_PREFIX
 
+JAVA_OPTS=-Dorg.slf4j.simpleLogger.defaultLogLevel=debug
+export JAVA_OPTS
+
 sh webapp/target/bin/webapp
