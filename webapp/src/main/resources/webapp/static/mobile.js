@@ -4,7 +4,10 @@ var queue = [];
 
 var loading = false;
 
+var history = [];
+
 MIN_QUEUE_LENGTH = 5;
+MAX_HISTORY = 100;
 
 function setCurrentTask(task) {
 	currentTask = task;
@@ -46,6 +49,16 @@ function setTaskResult(decision) {
 function addToQueue(tasks) {
 	for (var i = 0; i < tasks.length; i++) {
 		var task = tasks[i];
+		
+		if (history.indexOf(task.id) != -1) {
+			continue;
+		}
+		
+		history.push(task.id);
+		while (history.length() > MAX_HISTORY) {
+			history.shift()
+		}
+		
 		if (queue.length == 0 && currentTask === null) {
 			setCurrentTask(task);
 		} else {
