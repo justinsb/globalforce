@@ -1,5 +1,6 @@
 package us.globalforce.resources;
 
+import java.io.IOException;
 import java.net.URI;
 
 import javax.inject.Inject;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import us.globalforce.model.Credential;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
-import us.globalforce.services.JdbcRepository;
+import us.globalforce.services.CredentialsService;
 
 import com.google.common.base.Strings;
 
@@ -22,10 +23,8 @@ import com.google.common.base.Strings;
 public class OAuthResource {
     private static final Logger log = LoggerFactory.getLogger(OAuthResource.class);
 
-    private static final long serialVersionUID = 1L;
-
     @Inject
-    JdbcRepository repository;
+    CredentialsService credentials;
 
     @Inject
     OAuthClient oauthClient;
@@ -68,7 +67,7 @@ public class OAuthResource {
         return Response.temporaryRedirect(URI.create(request.getContextPath() + "/static/mobile.html")).build();
     }
 
-    private void saveCredential(OAuthToken token) {
+    private void saveCredential(OAuthToken token) throws IOException {
         String refreshToken = token.getRefreshToken();
 
         if (Strings.isNullOrEmpty(refreshToken)) {
@@ -81,6 +80,6 @@ public class OAuthResource {
         credential.userId = token.getUserId();
         credential.refreshToken = refreshToken;
 
-        repository.insertCredential(credential);
+        credentials.insertCredential(credential);
     }
 }

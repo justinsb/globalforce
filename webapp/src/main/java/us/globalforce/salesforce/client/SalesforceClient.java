@@ -1,6 +1,7 @@
 package us.globalforce.salesforce.client;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class SalesforceClient {
     private static final Logger log = LoggerFactory.getLogger(SalesforceClient.class);
@@ -100,6 +102,39 @@ public class SalesforceClient {
         } finally {
             patch.releaseConnection();
         }
+    }
+
+    public String create(String sfClass, JsonObject json) throws IOException {
+        URL url = new URL(baseUrl, "services/data/v20.0/sobjects/" + sfClass + "/");
+
+        PostMethod post = new PostMethod(url.toString());
+        post.setRequestHeader("Authorization", token.getHeader());
+        post.setRequestEntity(new StringRequestEntity(json.toString(), "application/json", null));
+
+        try {
+            httpclient.executeMethod(post);
+
+            if (post.getStatusCode() == HttpStatus.SC_CREATED) {
+                JsonParser parser = new JsonParser();
+
+                JsonObject response = parser.parse(new InputStreamReader(post.getResponseBodyAsStream()))
+                        .getAsJsonObject();
+
+                log.info("Create response: {}", response.toString());
+
+                if (response.get("success").getAsBoolean()) {
+                    String id = response.get("id").getAsString();
+                    log.info("Created item with id {}", id);
+                    return id;
+                }
+            } else {
+                log.info("Unexpected status code from create: {}", post.getStatusLine());
+            }
+        } finally {
+            post.releaseConnection();
+        }
+
+        throw new IOException("Error creating item");
     }
 
 }

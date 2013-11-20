@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.httpclient.methods.GetMethod;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -36,6 +37,10 @@ public class SObjectList implements Iterable<SObject> {
     @Override
     public Iterator<SObject> iterator() {
         return results.iterator();
+    }
+
+    public SObject firstOrNull() {
+        return Iterables.getFirst(results, null);
     }
 
 }

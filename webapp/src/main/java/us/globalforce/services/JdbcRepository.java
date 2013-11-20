@@ -61,6 +61,9 @@ public class JdbcRepository {
 
         @Query("SELECT * FROM credential WHERE organization=? ORDER BY created DESC LIMIT 1")
         List<Credential> findNewestCredentials(String organization);
+
+        @Query("SELECT DISTINCT organization FROM credential")
+        List<String> findAllCredentialOrganizations();
     }
 
     // @JdbcTransaction
@@ -190,6 +193,13 @@ public class JdbcRepository {
         }
 
         return decision;
+    }
+
+    @JdbcTransaction
+    public List<String> findAllCredentialOrganizations() {
+        Queries queries = queryFactory.get(Queries.class);
+        return queries.findAllCredentialOrganizations();
+
     }
 
 }
