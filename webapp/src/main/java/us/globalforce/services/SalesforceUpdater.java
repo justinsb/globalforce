@@ -81,8 +81,15 @@ public class SalesforceUpdater {
 
                     SObjectList list = client.runQuery(soql);
 
-                    for (SObject o : list) {
-                        sentimentService.findSentiment(credential.organization, o);
+                    for (SObject i : list) {
+                        String objectId = i.getId();
+                        SObject o = client.find(sfClass, objectId);
+
+                        if (o == null) {
+                            log.warn("Unable to find object: {}", objectId);
+                        } else {
+                            sentimentService.findSentiment(credential.organization, o);
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Error doing catch-up with salesforce", e);
