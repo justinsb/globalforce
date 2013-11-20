@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 
 public class PushTopic {
     public static SObject find(SalesforceClient client, String key) throws IOException {
-        String soql = "SELECT Id,Name,Query from PushTopic WHERE Name='" + key + "'";
+        String soql = "SELECT Name,Query from PushTopic WHERE Name='" + key + "'";
         SObjectList items = client.runQuery(soql);
         return items.firstOrNull();
     }

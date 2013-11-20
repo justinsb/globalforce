@@ -71,7 +71,7 @@ public class SalesforceClient {
                 SObjectList results = new SObjectList(get);
                 return results;
             } else {
-                log.info("Bad response fetching schema: {}", get.getStatusLine());
+                log.info("Bad response running query: {}", get.getStatusLine());
                 throw new IOException("Unexpected status code");
             }
         } finally {
