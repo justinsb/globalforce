@@ -58,7 +58,7 @@ public class SalesforceHooks {
             SObject o = PushTopic.find(client, HOOK_KEY);
             if (o == null) {
                 log.info("Push topic not found; creating");
-                PushTopic.create(client, HOOK_KEY, HOOK_QUERY, true, false);
+                PushTopic.create(client, HOOK_KEY, HOOK_QUERY, true, false, false, false);
             }
 
             StreamingClient listener = new StreamingClient(token, HOOK_KEY) {

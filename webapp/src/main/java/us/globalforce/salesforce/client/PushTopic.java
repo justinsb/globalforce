@@ -12,13 +12,17 @@ public class PushTopic {
     }
 
     public static String create(SalesforceClient client, String key, String query, boolean notifyForCreate,
-            boolean notifyForUpdate) throws IOException {
+            boolean notifyForUpdate, boolean notifyForOperationDelete, boolean notifyForOperationUndelete)
+            throws IOException {
         JsonObject json = new JsonObject();
         json.addProperty("ApiVersion", "29.0");
         json.addProperty("Name", key);
         json.addProperty("Query", query);
+
         json.addProperty("NotifyForOperationCreate", notifyForCreate);
         json.addProperty("NotifyForOperationUpdate", notifyForUpdate);
+        json.addProperty("NotifyForOperationDelete", notifyForOperationDelete);
+        json.addProperty("NotifyForOperationUndelete", notifyForOperationUndelete);
 
         return client.create("PushTopic", json);
     }
