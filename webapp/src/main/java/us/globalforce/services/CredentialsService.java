@@ -21,6 +21,9 @@ public class CredentialsService {
     @Inject
     SalesforceHooks salesforceHooks;
 
+    @Inject
+    SalesforceUpdater salesforceUpdater;
+
     public void insertCredential(Credential credential) throws IOException {
         repository.insertCredential(credential);
 
@@ -38,6 +41,15 @@ public class CredentialsService {
                 salesforceHooks.ensureHooked(credential);
             } catch (Exception e) {
                 log.warn("Unable to hook organization: " + organization, e);
+            }
+        }
+
+        for (String organization : repository.findAllCredentialOrganizations()) {
+            try {
+                Credential credential = repository.findCredential(organization);
+                salesforceUpdater.catchup(credential);
+            } catch (Exception e) {
+                log.warn("Unable to catch-up for organization: " + organization, e);
             }
         }
     }

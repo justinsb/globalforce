@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import us.globalforce.model.Credential;
 import us.globalforce.salesforce.client.SObject;
+import us.globalforce.salesforce.client.SObjectList;
 import us.globalforce.salesforce.client.SalesforceClient;
 import us.globalforce.salesforce.client.oauth.OAuthClient;
 import us.globalforce.salesforce.client.oauth.OAuthToken;
@@ -28,7 +29,7 @@ public class SalesforceUpdater {
     @Inject
     JdbcRepository repository;
 
-    final ExecutorService executor = Executors.newFixedThreadPool(1);
+    final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Inject
     HttpClient httpClient;
@@ -63,6 +64,33 @@ public class SalesforceUpdater {
         });
     }
 
+    public void catchup(final Credential credential) {
+        catchup(credential, "Case");
+    }
+
+    public void catchup(final Credential credential, final String sfClass) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OAuthToken token = oauthClient.refreshToken(credential.refreshToken);
+
+                    SalesforceClient client = new SalesforceClient(httpClient, token);
+
+                    String soql = "SELECT Id FROM " + sfClass + " WHERE Sentiment__c = null";
+
+                    SObjectList list = client.runQuery(soql);
+
+                    for (SObject o : list) {
+                        sentimentService.findSentiment(credential.organization, o);
+                    }
+                } catch (Exception e) {
+                    log.error("Error doing catch-up with salesforce", e);
+                }
+            }
+        });
+    }
+
     public void analyzeObject(final Credential credential, final String sfClass, final String objectId) {
         executor.execute(new Runnable() {
             @Override
@@ -80,7 +108,7 @@ public class SalesforceUpdater {
                         sentimentService.findSentiment(credential.organization, o);
                     }
                 } catch (Exception e) {
-                    log.error("Error updating salesforce", e);
+                    log.error("Error analyzing object from salesforce", e);
                 }
             }
         });
