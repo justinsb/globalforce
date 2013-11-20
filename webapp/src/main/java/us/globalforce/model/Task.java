@@ -31,4 +31,7 @@ public class Task {
 
     @Column
     public String decision;
+
+    @Column(name = "sfclass")
+    public String sfClass;
 }

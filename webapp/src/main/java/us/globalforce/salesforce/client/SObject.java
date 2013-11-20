@@ -17,8 +17,19 @@ public class SObject {
 
     private final JsonObject json;
 
+    private final String sfClass;
+
     public SObject(JsonObject json) {
         this.json = json;
+
+        // "attributes" :
+        // {
+        // "type" : "Account",
+        // "url" : "/services/data/v20.0/sobjects/Account/001D000000IRFmaIAH"
+        // },
+        JsonObject attributesJson = json.get("attributes").getAsJsonObject();
+        String type = attributesJson.get("type").getAsString();
+        this.sfClass = type;
     }
 
     public String getId() {
@@ -75,5 +86,9 @@ public class SObject {
             log.warn("Key was found, but was not string: {}={}", key, jsonElement);
         }
         return defaultValue;
+    }
+
+    public String getSfClass() {
+        return sfClass;
     }
 }

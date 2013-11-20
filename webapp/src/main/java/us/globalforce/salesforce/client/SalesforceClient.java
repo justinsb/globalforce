@@ -7,10 +7,14 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.globalforce.salesforce.client.oauth.OAuthToken;
+
+import com.google.gson.JsonObject;
 
 public class SalesforceClient {
     private static final Logger log = LoggerFactory.getLogger(SalesforceClient.class);
@@ -20,10 +24,10 @@ public class SalesforceClient {
 
     final OAuthToken token;
 
-    public SalesforceClient(HttpClient httpclient, URL baseUrl, OAuthToken token) {
+    public SalesforceClient(HttpClient httpclient, OAuthToken token) {
         super();
         this.httpclient = httpclient;
-        this.baseUrl = baseUrl;
+        this.baseUrl = token.getInstanceUrl();
         this.token = token;
     }
 
@@ -76,4 +80,26 @@ public class SalesforceClient {
     public OAuthToken getAuthToken() {
         return this.token;
     }
+
+    public void update(String sfClass, String objectId, JsonObject update) throws IOException {
+        URL url = new URL(baseUrl, "services/data/v20.0/sobjects/" + sfClass + "/" + objectId);
+
+        PostMethod patch = new PostMethod(url.toString()) {
+            @Override
+            public String getName() {
+                return "PATCH";
+            }
+        };
+
+        patch.setRequestHeader("Authorization", token.getHeader());
+        patch.setRequestEntity(new StringRequestEntity(update.toString(), "application/json", null));
+
+        try {
+            httpclient.executeMethod(patch);
+            log.info("HTTP status {} updating {}", patch.getStatusCode(), objectId);
+        } finally {
+            patch.releaseConnection();
+        }
+    }
+
 }

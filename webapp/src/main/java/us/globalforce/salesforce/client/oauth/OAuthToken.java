@@ -2,6 +2,7 @@ package us.globalforce.salesforce.client.oauth;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -50,8 +51,12 @@ public class OAuthToken implements Serializable {
         return accessToken;
     }
 
-    public String getInstanceUrl() {
-        return instanceUrl;
+    public URL getInstanceUrl() {
+        try {
+            return new URL(instanceUrl);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException();
+        }
     }
 
     public static OAuthToken find(HttpServletRequest request) {

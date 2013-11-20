@@ -70,18 +70,25 @@ public class JdbcRepository {
     // }
 
     @JdbcTransaction
-    public List<Task> listTasks(String organizationId, ProblemType problem, String objectId) {
+    public List<Task> listTasks(String organizationId, String problemKey, String objectId) {
         Queries queries = queryFactory.get(Queries.class);
-        return queries.listTasks(organizationId, problem.getKey(), objectId);
+        return queries.listTasks(organizationId, problemKey, objectId);
     }
 
     @JdbcTransaction
-    public long addTask(String organizationId, ProblemType problem, String objectId, int sequence, String sentence) {
+    public List<Task> listTasks(String organizationId, ProblemType problem, String objectId) {
+        return listTasks(organizationId, problem.getKey(), objectId);
+    }
+
+    @JdbcTransaction
+    public long addTask(String organizationId, ProblemType problem, String sfClass, String objectId, int sequence,
+            String sentence) {
         Queries queries = queryFactory.get(Queries.class);
         Task task = new Task();
         task.organization = organizationId;
         task.id = generateRandomInt64();
         task.problem = problem.getKey();
+        task.sfClass = sfClass;
         task.objectId = objectId;
         task.sequence = sequence;
         task.input = sentence;

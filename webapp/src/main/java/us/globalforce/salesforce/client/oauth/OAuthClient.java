@@ -74,4 +74,29 @@ public class OAuthClient {
         }
     }
 
+    public OAuthToken refreshToken(String refreshToken) throws IOException {
+        PostMethod post = new PostMethod("https://login.salesforce.com/services/oauth2/token");
+        post.addParameter("grant_type", "refresh_token");
+        post.addParameter("client_id", clientId);
+        post.addParameter("client_secret", clientSecret);
+        post.addParameter("refresh_token", refreshToken);
+
+        try {
+            httpClient.executeMethod(post);
+
+            JsonParser parser = new JsonParser();
+            JsonObject authResponse = parser.parse(new InputStreamReader(post.getResponseBodyAsStream()))
+                    .getAsJsonObject();
+            log.info("Auth response: " + authResponse.toString());
+
+            OAuthToken token = new OAuthToken(authResponse);
+
+            log.info("Got access token: " + token);
+
+            return token;
+        } finally {
+            post.releaseConnection();
+        }
+    }
+
 }

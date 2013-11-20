@@ -47,45 +47,49 @@ public class SentimentService {
                 // Sentiment sentiment = analysis.getSentiments().get(i);
 
                 // TODO: Once we have more confidence in the model, only create tasks where we're not sure
-                repository.addTask(organizationId, ProblemType.Sentiment, objectId, i, sentence);
+                repository.addTask(organizationId, ProblemType.Sentiment, o.getSfClass(), objectId, i, sentence);
             }
+            return null;
         } else {
-            Collections.sort(tasks, new Comparator<Task>() {
-                @Override
-                public int compare(Task o1, Task o2) {
-                    int s1 = o1.sequence;
-                    int s2 = o2.sequence;
+            return determineSentiment(tasks);
+        }
+    }
 
-                    if (s1 <= s2) {
-                        if (s1 == s2) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
+    public Sentiment determineSentiment(List<Task> tasks) {
+        Collections.sort(tasks, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                int s1 = o1.sequence;
+                int s2 = o2.sequence;
+
+                if (s1 <= s2) {
+                    if (s1 == s2) {
+                        return 0;
                     } else {
-                        return 1;
+                        return -1;
                     }
+                } else {
+                    return 1;
                 }
-            });
-
-            List<String> sentences = Lists.newArrayList();
-            List<Sentiment> sentiments = Lists.newArrayList();
-
-            for (Task task : tasks) {
-                sentences.add(task.input);
-                Sentiment sentiment = null;
-                if (task.decision != null) {
-                    sentiment = Sentiment.parse(task.decision);
-                }
-                sentiments.add(sentiment);
             }
+        });
 
-            SentimentAnalysis analysis = new SentimentAnalysis(sentences, sentiments);
-            if (analysis.isComplete()) {
-                return analysis.getOverall();
+        List<String> sentences = Lists.newArrayList();
+        List<Sentiment> sentiments = Lists.newArrayList();
+
+        for (Task task : tasks) {
+            sentences.add(task.input);
+            Sentiment sentiment = null;
+            if (task.decision != null) {
+                sentiment = Sentiment.parse(task.decision);
             }
+            sentiments.add(sentiment);
         }
 
+        SentimentAnalysis analysis = new SentimentAnalysis(sentences, sentiments);
+        if (analysis.isComplete()) {
+            return analysis.getOverall();
+        }
         return null;
     }
 

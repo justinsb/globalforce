@@ -16,8 +16,24 @@ public class TaskService {
     @Inject
     JdbcRepository repository;
 
+    @Inject
+    SentimentService sentimentService;
+
+    @Inject
+    SalesforceUpdater salesforceUpdater;
+
     public Task addTaskDecision(Task decision) {
-        return repository.addTaskDecision(decision);
+        Task task = repository.addTaskDecision(decision);
+
+        List<Task> tasks = repository.listTasks(decision.organization, decision.problem, decision.objectId);
+
+        Sentiment sentiment = sentimentService.determineSentiment(tasks);
+        if (sentiment != null) {
+            salesforceUpdater.updateSentiment(decision.organization, decision.sfClass, decision.objectId,
+                    sentiment.getScore());
+        }
+
+        return task;
     }
 
     public List<Task> assignTasks(String organizationId, int n, List<Long> veto) {
