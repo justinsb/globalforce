@@ -65,7 +65,9 @@ public class OAuthClient {
     public URL getAuthUrl() {
         try {
             String authUrl = environment + "/services/oauth2/authorize?response_type=code&client_id=" + clientId
-                    + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
+                    + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8")
+                    // We want a refresh_token and full rights
+                    + "&scope=" + URLEncoder.encode("full refresh_token", "UTF-8");
             return new URL(authUrl);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException();

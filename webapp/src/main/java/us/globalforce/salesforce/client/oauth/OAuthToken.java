@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Splitter;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class OAuthToken implements Serializable {
