@@ -1,3 +1,6 @@
 [submodule "fathomdb-shared"]
 	path = fathomdb-shared
 	url = https://github.com/fathomdb/fathomdb-shared.git
+[submodule "webapp/src/main/resources/webapp/static/mobile-design-templates"]
+	path = webapp/src/main/resources/webapp/static/mobile-design-templates
+	url = https://github.com/developerforce/Mobile-Design-Templates.git

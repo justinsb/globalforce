@@ -93,5 +93,4 @@ if (queue.length <= MIN_QUEUE_LENGTH) {
 	reloadQueue();
 }
 
-
 });
