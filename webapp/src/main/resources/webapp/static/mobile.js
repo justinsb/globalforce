@@ -12,7 +12,7 @@ MAX_HISTORY = 100;
 function setCurrentTask(task) {
 	currentTask = task;
 	if (currentTask != null) {
-		$("#input").text(currentTask.input);
+		$("#input").text("\"" + currentTask.input + "\"");
 		$.mobile.changePage( "#sentimentTask", { transition: "slideup", changeHash: false, allowSamePageTransition: true });
 	} else {
 		$.mobile.changePage( "#loading", { transition: "slideup", changeHash: false, allowSamePageTransition: true });
