@@ -7,6 +7,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.globalforce.model.Task;
 import us.globalforce.salesforce.client.SObject;
 
@@ -14,6 +17,8 @@ import com.google.common.collect.Lists;
 
 @Singleton
 public class SentimentService {
+    private static final Logger log = LoggerFactory.getLogger(SentimentService.class);
+
     private static final String FIELD_SENTIMENT = "Sentiment__c";
 
     @Inject
@@ -31,6 +36,8 @@ public class SentimentService {
         }
 
         String objectId = o.getId();
+
+        log.info("Checking sentiment for {}", objectId);
 
         List<Task> tasks = repository.listTasks(organizationId, ProblemType.Sentiment, objectId);
         if (tasks.isEmpty()) {
