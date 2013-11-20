@@ -30,7 +30,7 @@ public class SalesforceHooks {
     final Map<String, SalesforceHook> hooks = Maps.newHashMap();
 
     public static final String HOOK_KEY = "HookCases";
-    public static final String HOOK_QUERY = "SELECT Id FROM Case";
+    public static final String HOOK_QUERY = "SELECT Id,Subject FROM Case";
 
     @Inject
     OAuthClient oauthClient;
