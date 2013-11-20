@@ -44,8 +44,8 @@ public class JdbcRepository {
         @Query("SELECT * FROM task WHERE worker is null AND organization=?")
         List<Task> listAllOpenTasks(String organizationId);
 
-        @Query("SELECT * FROM task WHERE organization=? AND worker is null and id < ? LIMIT 1")
-        List<Task> firstOpenTaskLT(String organizationId, long pivot);
+        @Query("SELECT * FROM task WHERE organization=? AND worker is null and id <= ? LIMIT 1")
+        List<Task> firstOpenTaskLTE(String organizationId, long pivot);
 
         @Query("SELECT * FROM task WHERE organization=? AND worker is null and id > ? LIMIT 1")
         List<Task> firstOpenTaskGT(String organizationId, long pivot);
@@ -152,7 +152,7 @@ public class JdbcRepository {
             return Iterables.getFirst(tasks, null);
         }
 
-        tasks = queries.firstOpenTaskLT(organizationId, pivot);
+        tasks = queries.firstOpenTaskLTE(organizationId, pivot);
         if (!tasks.isEmpty()) {
             return Iterables.getFirst(tasks, null);
         }

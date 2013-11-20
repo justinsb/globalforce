@@ -48,7 +48,7 @@ public class TaskService {
         for (int i = 0; i < n * 2; i++) {
             Task task = repository.assignTask(organizationId);
             if (task == null) {
-                continue;
+                break;
             }
 
             if (ids.contains(task.id)) {
