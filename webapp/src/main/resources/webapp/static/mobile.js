@@ -79,7 +79,9 @@ function addToQueue(tasks) {
 	}
 	
 	if (queue.length <= MIN_QUEUE_LENGTH) {
-		reloadQueue();
+		window.setTimeout(function() {
+     		reloadQueue();
+   		}, 1000);
 	}
 }
 
@@ -105,7 +107,7 @@ function reloadQueue() {
 			loading = false;
 			window.setTimeout(function() {
      			reloadQueue();
-   			}, 200);
+   			}, 2000);
 		}
 	});
 }
