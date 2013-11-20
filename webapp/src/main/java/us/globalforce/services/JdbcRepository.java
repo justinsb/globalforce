@@ -2,6 +2,7 @@ package us.globalforce.services;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -18,6 +19,8 @@ import com.fathomdb.jdbc.JdbcTransaction;
 import com.fathomdb.jpa.Query;
 import com.fathomdb.jpa.QueryFactory;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Singleton
 public class JdbcRepository {
@@ -144,6 +147,10 @@ public class JdbcRepository {
     public Task assignTask(String organizationId) {
         Queries queries = queryFactory.get(Queries.class);
 
+        return assignTask(queries, organizationId);
+    }
+
+    private Task assignTask(Queries queries, String organizationId) {
         long pivot = generateRandomInt64();
         List<Task> tasks;
 
@@ -200,6 +207,39 @@ public class JdbcRepository {
         Queries queries = queryFactory.get(Queries.class);
         return queries.findAllCredentialOrganizations();
 
+    }
+
+    @JdbcTransaction
+    public List<Task> assignTasks(String organizationId, int n, List<Long> veto) {
+        Queries queries = queryFactory.get(Queries.class);
+
+        List<Task> tasks = Lists.newArrayList();
+
+        Set<Long> ids = Sets.newHashSet();
+
+        for (Long v : veto) {
+            ids.add(v);
+        }
+
+        for (int i = 0; i < n * 2; i++) {
+            Task task = assignTask(queries, organizationId);
+            if (task == null) {
+                break;
+            }
+
+            if (ids.contains(task.id)) {
+                continue;
+            }
+
+            tasks.add(task);
+            ids.add(task.id);
+
+            if (tasks.size() >= n) {
+                break;
+            }
+        }
+
+        return tasks;
     }
 
 }
