@@ -43,6 +43,9 @@ public class SalesforceHooks {
     @Inject
     SalesforceUpdater salesforceUpdater;
 
+    @Inject
+    JdbcRepository repository;
+
     final Executor executor = Executors.newCachedThreadPool();
 
     public class SalesforceHook {
@@ -96,7 +99,15 @@ public class SalesforceHooks {
                         if (sobject != null) {
                             String id = (String) sobject.get("Id");
                             if (!Strings.isNullOrEmpty(id)) {
-                                salesforceUpdater.analyzeObject(credential, HOOK_CLASS, id);
+                                String organization = credential.organization;
+
+                                final Credential latestCredential = repository.findCredential(organization);
+                                if (latestCredential == null) {
+                                    log.error("Unable to find credential for organization {}", organization);
+                                    return;
+                                }
+
+                                salesforceUpdater.analyzeObject(latestCredential, HOOK_CLASS, id);
                             } else {
                                 log.info("No Id");
                             }
